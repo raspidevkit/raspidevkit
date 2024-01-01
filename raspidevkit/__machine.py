@@ -112,7 +112,7 @@ class Machine:
 
 
 
-    def gpio_read(self, pin) -> bool:
+    def gpio_read(self, pin: int) -> bool:
         """
         Read the value from a GPIO pin
         
@@ -195,7 +195,7 @@ class Machine:
     
 
 
-    def attach_active_buzzer(self, pin) -> ActiveBuzzer:
+    def attach_active_buzzer(self, pin: int) -> ActiveBuzzer:
         """
         Attach an active buzzer to this machine
 
@@ -204,12 +204,12 @@ class Machine:
         self._validate_pin(pin)
         active_buzzer = ActiveBuzzer(self, pin)
         self._devices.append(active_buzzer)
-        self.logger.info(f'Active buzzer atached to pin: {pin}')
+        self.logger.info(f'Active buzzer attached to pin: {pin}')
         return active_buzzer
     
 
 
-    def attach_passive_buzzer(self, pin) -> PassiveBuzzer:
+    def attach_passive_buzzer(self, pin: int) -> PassiveBuzzer:
         """
         Attach a passive buzzer to this machine
 
@@ -218,7 +218,7 @@ class Machine:
         self._validate_pin(pin)
         passive_buzzer = PassiveBuzzer(self, pin)
         self._devices.append(passive_buzzer)
-        self.logger.info(f'Passive buzzer atached to pin: {pin}')
+        self.logger.info(f'Passive buzzer attached to pin: {pin}')
         return passive_buzzer
     
 
