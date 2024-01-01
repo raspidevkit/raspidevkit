@@ -1,6 +1,7 @@
 from .machineutils import dictutils
 from .__logger import MachineLogger
-from .__devices import Button, Led, RgbLed, ActiveBuzzer, PassiveBuzzer, Sim808, Arduino
+from .__devices import Button, Led, RgbLed, ActiveBuzzer, LightSensor, PassiveBuzzer, Sim808, Arduino
+from .constants import INPUT, OUTPUT
 from typing import Union
 
 import sys
@@ -98,7 +99,23 @@ class Machine:
     
 
 
-    def gpio_write(self, pin:int, value: bool):
+    def gpio_setup(self, pin: int,  setup: str):
+        """
+        Explicitly setup a GPIO pin
+
+        :param pin: Pin to setup
+        :param setup: Pin mode (INPUT or OUTPUT)
+        """
+        if setup.upper() == INPUT:
+            GPIO.setup(pin, GPIO.IN)
+        elif setup.upper() == OUTPUT:
+            GPIO.setup(pin, GPIO.OUT)
+        else:
+            raise ValueError('Invalid pin mode')
+        
+
+
+    def gpio_write(self, pin: int, value: bool):
         """
         Perform a GPIO output on a pin
 
@@ -112,7 +129,7 @@ class Machine:
 
 
 
-    def gpio_read(self, pin) -> bool:
+    def gpio_read(self, pin: int) -> bool:
         """
         Read the value from a GPIO pin
         
@@ -195,7 +212,7 @@ class Machine:
     
 
 
-    def attach_active_buzzer(self, pin) -> ActiveBuzzer:
+    def attach_active_buzzer(self, pin: int) -> ActiveBuzzer:
         """
         Attach an active buzzer to this machine
 
@@ -204,12 +221,12 @@ class Machine:
         self._validate_pin(pin)
         active_buzzer = ActiveBuzzer(self, pin)
         self._devices.append(active_buzzer)
-        self.logger.info(f'Active buzzer atached to pin: {pin}')
+        self.logger.info(f'Active buzzer attached to pin: {pin}')
         return active_buzzer
     
 
 
-    def attach_passive_buzzer(self, pin) -> PassiveBuzzer:
+    def attach_passive_buzzer(self, pin: int) -> PassiveBuzzer:
         """
         Attach a passive buzzer to this machine
 
@@ -218,8 +235,22 @@ class Machine:
         self._validate_pin(pin)
         passive_buzzer = PassiveBuzzer(self, pin)
         self._devices.append(passive_buzzer)
-        self.logger.info(f'Passive buzzer atached to pin: {pin}')
+        self.logger.info(f'Passive buzzer attached to pin: {pin}')
         return passive_buzzer
+    
+
+
+    def attach_light_sensor(self, pin: int) -> LightSensor:
+        """
+        Attach a light sensor to this machine
+
+        :param pin: Pin to use
+        """
+        self._validate_pin(pin)
+        light_sensor = LightSensor(self, pin)
+        self._devices.append(light_sensor)
+        self.logger.info(f'Light sensor attached to pin: {pin}')
+        return light_sensor
     
 
 
