@@ -1,6 +1,7 @@
 from .machineutils import dictutils
 from .__logger import MachineLogger
-from .__devices import Button, Led, RgbLed, ActiveBuzzer, LightSensor, PassiveBuzzer, Sim808, Arduino
+from .__devices import Button, Led, RgbLed, ActiveBuzzer, LightSensor, PIRMotionSensor, \
+    PassiveBuzzer, Sim808, Arduino
 from .constants import INPUT, OUTPUT
 from typing import Union
 
@@ -253,6 +254,20 @@ class Machine:
         self._devices.append(light_sensor)
         self.logger.info(f'Light sensor attached to pin: {pin}')
         return light_sensor
+    
+
+
+    def attach_pir_motion_sensor(self, pin: int) -> PIRMotionSensor:
+        """
+        Attach a PIR motion sensor to this machine
+
+        :param pin: Pin to use
+        """
+        self._validate_pin(pin)
+        pir_motion_sensor = PIRMotionSensor(self, pin)
+        self._devices.append(pir_motion_sensor)
+        self.logger.info(f'PIR motion sensor attached to pin: {pin}')
+        return pir_motion_sensor
     
 
 

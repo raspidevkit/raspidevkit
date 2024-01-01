@@ -4,5 +4,6 @@ from .__gpio.rgb_led import RgbLed
 from .__gpio.buzzer import ActiveBuzzer
 from .__gpio.buzzer import PassiveBuzzer
 from .__gpio.light_sensor import LightSensor
+from .__gpio.pir_motion_sensor import PIRMotionSensor
 from .sim808 import Sim808
 from .arduino import Arduino
