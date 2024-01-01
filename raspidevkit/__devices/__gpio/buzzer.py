@@ -106,3 +106,8 @@ class PassiveBuzzer(PwmDevice):
         music = zip(notes, beats)
         for note, beat in music:
             self.play_note(note, beat)
+
+
+
+    def __repr__(self):
+        return f"Buzzer <pin={self.pin}, state={self._state}>"

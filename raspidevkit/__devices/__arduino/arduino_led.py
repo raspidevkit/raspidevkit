@@ -116,3 +116,8 @@ class ArduinoLed(ArduinoDevice):
         """
         return "arduino_led"
     
+
+
+    def __repr__(self):
+        return f"Arduino LED <pin={self.pin}, state={self._state}>"
+    

@@ -135,3 +135,8 @@ class RgbLed(GpioDevice):
         """
         self.turn_off()
         
+
+
+    def __repr__(self):
+        return f"RGB LED <pins={self.pins}, state={self._state}>"
+    
