@@ -243,6 +243,8 @@ class Machine:
     def attach_light_sensor(self, pin: int) -> LightSensor:
         """
         Attach a light sensor to this machine
+        A capacitor is needed in the circuit
+        Refer to this [diagram](https://pimylifeup.com/wp-content/uploads/2016/01/Light-Sensor-Circuit.jpg)
 
         :param pin: Pin to use
         """
