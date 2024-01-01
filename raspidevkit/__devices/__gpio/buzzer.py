@@ -20,6 +20,8 @@ class ActiveBuzzer(GpioDevice):
     def __init__(self, machine, pin: int):
         """
         Create an active buzzer object
+
+        :param pin: Pin this device is attached to
         """
         pin_setup = {
             str(pin): OUTPUT
@@ -45,24 +47,29 @@ class ActiveBuzzer(GpioDevice):
         """
         if not self.state:
             self._machine.gpio_write(self.pin, True)
+            self._state = True
 
 
 
-    def turn_on(self):
+    def turn_off(self):
         """
-        Turn this buzzer on
+        Turn this buzzer off
         """
         if self.state:
             self._machine.gpio_write(self.pin, False)
+            self._state = False
 
 
 
 class PassiveBuzzer(PwmDevice):
-    def __init__(self, pin: int) -> None:
+    def __init__(self, machine, pin: int) -> None:
         """
         Create a passive buzzer object
+
+        :param pin: Pin this device is attached to
         """
         super().__init__(pin, 440)
+        self._machine = machine
 
 
 
