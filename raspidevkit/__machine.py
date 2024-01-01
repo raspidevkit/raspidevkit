@@ -294,3 +294,4 @@ class Machine:
         self._devices.append(arduino)
         self.logger.info(f'Arduino attached to port: {port}')
         return arduino
+    
