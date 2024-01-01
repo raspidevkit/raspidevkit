@@ -1,6 +1,6 @@
 from .machineutils import dictutils
 from .__logger import MachineLogger
-from .__devices import Button, Led, RgbLed, Sim808, Arduino
+from .__devices import Button, Led, RgbLed, ActiveBuzzer, PassiveBuzzer, Sim808, Arduino
 from typing import Union
 
 import sys
@@ -192,6 +192,34 @@ class Machine:
         self._devices.append(rgb_led)
         self.logger.info(f'RGB LED attached to pins: {pins}')
         return rgb_led
+    
+
+
+    def attach_active_buzzer(self, pin) -> ActiveBuzzer:
+        """
+        Attach an active buzzer to this machine
+
+        :param pin: Pin to use
+        """
+        self._validate_pin(pin)
+        active_buzzer = ActiveBuzzer(self, pin)
+        self._devices.append(active_buzzer)
+        self.logger.info(f'Active buzzer atached to pin: {pin}')
+        return active_buzzer
+    
+
+
+    def attach_passive_buzzer(self, pin) -> PassiveBuzzer:
+        """
+        Attach a passive buzzer to this machine
+
+        :param pin: Pin to use
+        """
+        self._validate_pin(pin)
+        passive_buzzer = PassiveBuzzer(self, pin)
+        self._devices.append(passive_buzzer)
+        self.logger.info(f'Passive buzzer atached to pin: {pin}')
+        return passive_buzzer
     
 
 
