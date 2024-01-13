@@ -1,6 +1,6 @@
 from .machineutils import dictutils
 from .__logger import MachineLogger
-from .__devices import Button, Led, RgbLed, ActiveBuzzer, LightSensor, PIRMotionSensor, \
+from .devices import Button, Led, RgbLed, ActiveBuzzer, LightSensor, PIRMotionSensor, \
     PassiveBuzzer, Sim808, Arduino
 from .constants import INPUT, OUTPUT
 from typing import Union
