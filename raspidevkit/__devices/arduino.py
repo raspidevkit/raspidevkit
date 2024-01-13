@@ -1,4 +1,4 @@
-from .__arduino.arduino_led import ArduinoLed
+from .arduino.arduino_led import ArduinoLed
 from raspidevkit.machineutils import dictutils, formatutil
 from raspidevkit.constants import SERIAL_TERMINATOR
 from typing import Union
