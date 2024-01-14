@@ -47,7 +47,7 @@ class Machine:
         self.__intialize_logger(enable_logging)
         self.__clang_enabled = self.__is_clang_format_installed()
         self._devices = []
-        self._pin_mapping = {}
+        self._pin_mapping = []
 
 
 
@@ -142,7 +142,7 @@ class Machine:
 
 
 
-    def _validate_pin(self, pin: Union[int, list[int]]):
+    def _validate_pin(self, pin: Union[int, list[int], tuple[int]]):
         """
         Check if pin/pins is available
 
@@ -150,12 +150,14 @@ class Machine:
         :raises Exception: If pin is already in use
         """
         if isinstance(pin, int):
-            if str(pin) in list(self._pin_mapping.keys()):
+            if pin in self._pin_mapping:
                 raise Exception(f'Pin {pin} already in use.')
-        if isinstance(pin, list):
+            self._pin_mapping.append(pin)
+        if isinstance(pin, (list, tuple)):
             for p in pin:
-                if str(pin) in list(self._pin_mapping.keys()):
-                    raise Exception(f'Pin {pin} already in use.')
+                if p in self._pin_mapping:
+                    raise Exception(f'Pin {p} already in use.')
+                self._pin_mapping.append(p)
 
 
 
