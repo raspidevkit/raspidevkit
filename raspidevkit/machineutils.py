@@ -40,6 +40,31 @@ class dictutils:
     
 
 
+    @staticmethod
+    def does_keys_exists(dictionary: dict, keys: list[str], strict: bool = True) -> bool:
+        """
+        Check if all keys exists in the input dictionary
+
+        :param dictionary: Dictionary to check
+        :param keys: List of keys to validate
+        :param strict: Should all keys exist in the dictionary
+        """
+
+        if strict:
+            for key in keys:
+                if not key in dictionary.keys():
+                    return False
+            return True
+        
+        else:
+            for key in keys:
+                if key in dictionary.keys():
+                    return True
+            return False
+
+    
+
+
 class formatutil:
     """
     Formatter utility helper

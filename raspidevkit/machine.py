@@ -1,7 +1,7 @@
 from .machineutils import dictutils
 from .__logger import MachineLogger
 from .devices import Button, Led, RgbLed, ActiveBuzzer, LightSensor, PIRMotionSensor, \
-    PassiveBuzzer, Sim808, Arduino
+    PassiveBuzzer, L298NDriver, Sim808, Arduino
 from .constants import INPUT, OUTPUT
 from typing import Union
 
@@ -271,6 +271,22 @@ class Machine:
         self.logger.info(f'PIR motion sensor attached to pin: {pin}')
         return pir_motion_sensor
     
+
+
+    def attach_l298n(self, pins: Union[list, tuple]) -> L298NDriver:
+        """
+        Attach a L298N Driver to this machine
+
+        :param pins: Pins this device is connected to.
+                     Should follow the format 
+                     (ena, in1, in2) or (ena, in1, in2, enb, in3, in4)
+        """
+        self._validate_pin(pins)
+        l298n = L298NDriver(self, pins)
+        self._devices.append(l298n)
+        self.logger.info(f'L298N Driver attached to pins: {pins}')
+        return l298n
+
 
 
     def attach_sim808(self, port: str) -> Sim808:

@@ -24,3 +24,7 @@ YELLOW = 'YELLOW'
 MAGENTA = 'MAGENTA'
 CYAN = 'CYAN'
 WHITE = 'WHITE'
+
+# Motor Direction Related Constants
+CLOCKWISE = 'CW'
+COUNTER_CLOCKWISE = 'CCW'
