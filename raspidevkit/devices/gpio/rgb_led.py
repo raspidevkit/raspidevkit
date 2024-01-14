@@ -25,9 +25,9 @@ class RgbLed(GpioDevice):
             raise ValueError("Pins should have 3 values.")
         
         pin_setup = {
-            str(tuple[0]): OUTPUT,
-            str(tuple[1]): OUTPUT,
-            str(tuple[2]): OUTPUT,
+            str(pins[0]): OUTPUT,
+            str(pins[1]): OUTPUT,
+            str(pins[2]): OUTPUT,
         }
         super().__init__(pin_setup, device_type=OUTPUT)
         self._color = None
