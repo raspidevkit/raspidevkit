@@ -34,11 +34,11 @@ class GpioDevice:
         """
         for pin in pin_setup.keys():
             if pin_setup[pin] == INPUT:
-                GPIO.setup(pin, GPIO.IN)
+                GPIO.setup(int(pin), GPIO.IN)
             elif pin_setup[pin] == PULL_UP:
-                GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+                GPIO.setup(int(pin), GPIO.IN, pull_up_down=GPIO.PUD_UP)
             elif pin_setup[pin] == PULL_DOWN:
-                GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+                GPIO.setup(int(pin), GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
             elif pin_setup[pin] == OUTPUT:
                 GPIO.setup(int(pin), GPIO.OUT)
             else:
@@ -49,7 +49,7 @@ class GpioDevice:
             self.__multi_pin = True
         
         if self.__multi_pin:
-            self.__pins = tuple([int(pin) for pin in dict.keys()])
+            self.__pins = tuple([pin for pin in pin_setup.keys()])
         else:
             self.__pin = int(list(pin_setup.keys())[0])
         self._device_type = device_type
