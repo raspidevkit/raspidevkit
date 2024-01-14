@@ -7,14 +7,6 @@ from raspidevkit.machineutils import soundutil
 from typing import Union
 import time
 
-try:
-    import RPi.GPIO as GPIO
-except (RuntimeError, ModuleNotFoundError):
-    import fake_rpi
-    sys.modules['RPi'] = fake_rpi.RPi
-    sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO
-    import RPi.GPIO as GPIO
-
 
 class ActiveBuzzer(GpioDevice):
     def __init__(self, machine, pin: int):

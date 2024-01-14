@@ -1,8 +1,6 @@
 import sys
-import time
-from ..constants import INPUT, OUTPUT, PULL_UP, PULL_DOWN, \
-    RED, BLUE, GREEN, YELLOW, MAGENTA, CYAN, WHITE
-from typing import Callable, Union
+from ..constants import INPUT, OUTPUT, PULL_UP, PULL_DOWN
+from typing import Union
 
 try:
     import RPi.GPIO as GPIO
