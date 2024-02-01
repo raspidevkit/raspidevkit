@@ -143,3 +143,27 @@ class soundutil:
         if not frequency:
             raise ValueError('Note is not supported.')
         return frequency
+
+
+
+class mathutil:
+    """
+    Math utility helper
+    """
+
+    @staticmethod
+    def map_range(x: float, in_min: float, in_max: 
+                  float, out_min: float, out_max: float) -> float:
+        """
+        Get the x equivalent based on min and max value.
+        Just like `map` function of Arduino
+
+        :param x: Input to check for equivalent
+        :param in_min: Input lowest value
+        :param in_max: Input highest value
+        :param out_min: Output lowest value
+        :param out_max: Output lowest value
+        :return: Output equivalent value
+        """
+        return (x - in_min) * (out_max - out_min) // (in_max - in_min) + out_min
+    
