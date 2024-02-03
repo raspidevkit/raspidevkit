@@ -71,7 +71,7 @@ class ServoMotor(PwmDevice):
 
 
 
-    def __map_angle_to_duty_cycle(angle, min_duty, max_duty, min_angle, max_angle):
+    def __map_angle_to_duty_cycle(self, angle, min_duty, max_duty, min_angle, max_angle):
         angle = max(min_angle, min(max_angle, angle))
         mapped_duty_cycle = ((angle - min_angle) / (max_angle - min_angle)) * (max_duty - min_duty) + min_duty
         return mapped_duty_cycle
