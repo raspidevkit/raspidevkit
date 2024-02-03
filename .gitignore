@@ -1,5 +1,19 @@
-__pycache__
+# Environments 
 .venv
+.env
+.vscode
+
+# Distribution Files
+build
+dist
+raspidevkit.egg-info
+
+# Package Generated Files
 *.log
 .ino
+
+# Python Generated Files
+__pycache__
+
+# Some Scripts
 test.py

@@ -1,21 +1,17 @@
-import os
-from setuptools import setup
+import setuptools
 
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
-
-setup(
-    name = "raspidevkit",
-    version = "0.0.1",
-    author = "DailyLollipops",
-    description = ("A library to easily interface Raspberry Pi device"),
-    license = "BSD",
-    keywords = "raspberrypi",
-    packages=['an_example_pypi_project', 'tests'],
-    long_description=read('README'),
-    classifiers=[
-        "Development Status :: 3 - Alpha",
-        "Topic :: Utilities",
-        "License :: OSI Approved :: BSD License",
-    ],
+setuptools.setup(
+    name="raspidevkit",
+    description="Easily control devices with Raspberry Pi",
+    version="0.0.1",
+    url="https://github.com/raspidevkit/raspidevkit",
+    author="DailyLollipops",
+    author_email="clarencemadrigal84@gmail.com",
+    package_dir={"raspidevkit": "raspidevkit"},
+    packages=setuptools.find_namespace_packages(where="src"),
+    include_package_data=True,
+    install_requires=['fake-rpi', 
+                      'pyserial', 
+                      'setuptools', 
+                      'wheel']
 )
