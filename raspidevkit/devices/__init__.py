@@ -6,6 +6,7 @@ from .gpio.buzzer import PassiveBuzzer
 from .gpio.light_sensor import LightSensor
 from .gpio.pir_motion_sensor import PIRMotionSensor
 from .gpio.servo_motor import ServoMotor
+from .gpio.relay import Relay
 
 from .drivers.dc_motor.l298n import L298NDriver
 

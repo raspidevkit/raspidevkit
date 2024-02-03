@@ -1,7 +1,7 @@
 from .machineutils import dictutils
 from .__logger import MachineLogger
 from .devices import Button, Led, RgbLed, ActiveBuzzer, LightSensor, PIRMotionSensor, \
-    PassiveBuzzer, ServoMotor, L298NDriver, Sim808, Arduino
+                     PassiveBuzzer, ServoMotor, Relay, L298NDriver, Sim808, Arduino
 from .constants import INPUT, OUTPUT
 from typing import Union
 
@@ -212,6 +212,20 @@ class Machine:
         self._devices.append(rgb_led)
         self.logger.info(f'RGB LED attached to pins: {pins}')
         return rgb_led
+    
+
+
+    def attach_relay(self, pin: int) -> Relay:
+        """
+        Attach a relay to this machine
+
+        :param pin: Pin to attach the relay to
+        """
+        self._validate_pin(pin)
+        relay = Relay(self, pin)
+        self._devices.append(relay)
+        self.logger.info(f'Relay attached to pin: {pin}')
+        return relay
     
 
 
