@@ -273,7 +273,7 @@ class Machine:
     
 
 
-    def attach_servo_motor(self, pin: int) -> PIRMotionSensor:
+    def attach_servo_motor(self, pin: int) -> ServoMotor:
         """
         Attach a PIR motion sensor to this machine
 
