@@ -13,5 +13,6 @@ setuptools.setup(
     install_requires=['fake-rpi', 
                       'pyserial', 
                       'setuptools', 
+                      'smbus2'
                       'wheel']
 )

@@ -5,6 +5,7 @@ from .devices import Button, Led, RgbLed, ActiveBuzzer, LightSensor, PIRMotionSe
 from .constants import INPUT, OUTPUT
 from typing import Union
 
+import smbus2
 import sys
 import subprocess
 import logging
@@ -21,12 +22,14 @@ except (RuntimeError, ModuleNotFoundError):
 class Machine:
     def __init__(self, 
                  gpio_mode: str = 'BCM',
+                 i2cbus: int = 1,
                  enable_logging: bool = False,
                  **kwargs) -> None:
         '''
         Create a machine class which different devices can be created from.
 
         :param gpio_mode: GPIO mode can be `BCM` or `BOARD` as `GPIO.setmode()`
+        :param i2cbus: I2C bus to use, defaults to 1
         :param enable_logging: Enable logging, configuration can be set by passing in a config dictionary
         :param config: Config dictionary which will take priority. See sample config.
         '''
@@ -44,6 +47,7 @@ class Machine:
             GPIO.setmode(GPIO.BCM)
         else:
             raise ValueError('GPIO mode can only be BCM or BOARD.')
+        self.__i2cbus = smbus2.SMBus(i2cbus)
         self.__intialize_logger(enable_logging)
         self.__clang_enabled = self.__is_clang_format_installed()
         self._devices = []
@@ -139,6 +143,115 @@ class Machine:
         """
         value = GPIO.input(pin)
         return value
+
+
+
+    def i2c_read_byte(self, address: int, force: bool = False) -> int:
+        """
+        Read a single byte from an I2C address.
+
+        :param address: Device I2C address
+        :param force: Force read flag
+        :return: Read byte value
+        """
+        return self.__i2cbus.read_byte(address, force)
+    
+
+
+    def i2c_read_word_data(self, address: int, register: int, 
+                           force: bool = False) -> int:
+        """
+        Read a single word (2 bytes) from a given register
+
+        :param address: Device I2C address
+        :param register: Register address
+        :param force: Force read flag
+        :return: 2-byte word
+        """
+        return self.__i2cbus.read_word_data(address, register, force)
+    
+
+
+    def i2c_read_byte_data(self, address: int, register: int, 
+                           force: bool = False) -> int:
+        """
+        Read a single byte from a designated register
+        
+        :param address: Device I2C address
+        :param register: Register address
+        :param force: Force read flag
+        :return: Read byte value
+        """
+        return self.__i2cbus.read_byte_data(address, register, force)
+    
+
+
+    def i2c_read_block_data(self, address: int, register: int, 
+                            length: int = 32, force: bool = False) -> list[int]:
+        """
+        Read a block of data from a given register
+
+        :param address: Device I2C address
+        :param register: Register address
+        :param length: Block length, default to 32 bytes
+        :param force: Force read flag
+        :return: List of bytes
+        """
+        return self.__i2cbus.read_i2c_block_data(address, register, length, force)
+    
+
+
+    def i2c_write_byte(self, address: int, value: int, force: bool = False):
+        """
+        Write a single byte to an I2C address
+
+        :param address: Device I2C address
+        :param value: Value to write
+        :param force: Force write flag
+        """
+        self.__i2cbus.write_byte(address, value, force)
+
+
+
+    def i2c_write_word_data(self, address: int, register: int, 
+                            value:int, force: bool = False):
+        """
+        Write a single word (2 bytes) to a given register
+
+        :param address: Device I2C address
+        :param register: Register address
+        :param value: Word value to write
+        :param force: Force write flag
+        """
+        self.__i2cbus.write_word_data(address, register, value, force)
+
+
+        
+    def i2c_write_byte_data(self, address: int, register: int, 
+                            value: int, force: bool = False):
+        """
+        Write a byte to a given register
+
+        :param address: Device I2C address
+        :param register: Register address
+        :param value: Byte value to write
+        :param force: Force write flag
+        """
+        self.__i2cbus.write_byte_data(address, register, value, force)
+
+
+    
+    def i2c_write_block_data(self, address: int, register: int, 
+                             data: list[int], force: bool = False):
+        """
+        Write a block of byte data to a given register
+
+        :param address: Device I2C address
+        :param register: Register address
+        :param data: List of byte values to write
+        :param force: Force write flag
+        """
+        self.__i2cbus.write_block_data(address, register, data, force)
 
 
 

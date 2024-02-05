@@ -321,3 +321,122 @@ class ArduinoDevice:
         Perform cleanup
         """
         pass
+
+
+
+class I2CDevice:
+    def __init__(self, machine, address: int) -> None:
+        """
+        Create an I2C device
+
+        :param machine: Machine instance
+        :param address: Device I2C address
+        """
+        self.__address = address
+        self.__machine = machine
+
+
+    
+    @property
+    def address(self) -> int:
+        """
+        Device I2C address
+        """
+        return self.__address
+    
+
+    
+    def read_byte(self, force: bool = False) -> int:
+        """
+        Read a single byte from an I2C address.
+
+        :param force: Force read flag
+        :return: Read byte value
+        """
+        return self.__machine.i2c_read_byte(self.__address, force)
+    
+
+
+    def read_word_data(self, register: int, force: bool = False) -> int:
+        """
+        Read a single word (2 bytes) from a given register
+
+        :param register: Register address
+        :param force: Force read flag
+        :return: 2-byte word
+        """
+        return self.__machine.i2c_read_word_data(self.__address, register, force)
+    
+
+
+    def read_byte_data(self, register: int, force: bool = False) -> int:
+        """
+        Read a single byte from a designated register
+        
+        :param register: Register address
+        :param force: Force read flag
+        :return: Read byte value
+        """
+        return self.__machine.i2c_read_byte_data(self.__address, register, force)
+    
+
+
+    def read_block_data(self, register: int, length: int = 32, 
+                        force: bool = False) -> list[int]:
+        """
+        Read a block of data from a given register
+
+        :param register: Register address
+        :param length: Block length, default to 32 bytes
+        :param force: Force read flag
+        :return: List of bytes
+        """
+        return self.__machine.i2c_read_block_data(self.__address, register, length, force)
+    
+
+
+    def write_byte(self, value: int, force: bool = False):
+        """
+        Write a single byte to an I2C address
+
+        :param value: Value to write
+        :param force: Force write flag
+        """
+        self.__machine.i2c_write_byte(self.__address, value, force)
+
+
+
+    def write_word_data(self, register: int, value:int, force: bool = False):
+        """
+        Write a single word (2 bytes) to a given register
+
+        :param register: Register address
+        :param value: Word value to write
+        :param force: Force write flag
+        """
+        self.__machine.i2c_write_word_data(register, value, force)
+
+
+        
+    def write_byte_data(self, register: int, value: int, force: bool = False):
+        """
+        Write a byte to a given register
+
+        :param register: Register address
+        :param value: Byte value to write
+        :param force: Force write flag
+        """
+        self.__machine.i2c_write_byte_data(self.__address, register, value, force)
+
+
+    
+    def write_block_data(self, register: int, data: list[int], 
+                         force: bool = False):
+        """
+        Write a block of byte data to a given register
+
+        :param register: Register address
+        :param data: List of byte values to write
+        :param force: Force write flag
+        """
+        self.__machine.i2c_write_block_data(self.__address, register, data, force)
