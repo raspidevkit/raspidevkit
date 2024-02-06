@@ -5,7 +5,6 @@ from .devices import Button, Led, RgbLed, ActiveBuzzer, LightSensor, PIRMotionSe
 from .constants import INPUT, OUTPUT
 from typing import Union
 
-import smbus2
 import sys
 import subprocess
 import logging
@@ -22,7 +21,7 @@ except (RuntimeError, ModuleNotFoundError):
 class Machine:
     def __init__(self, 
                  gpio_mode: str = 'BCM',
-                 i2cbus: int = 1,
+                 i2cbus: Union[None, int] = None,
                  enable_logging: bool = False,
                  **kwargs) -> None:
         '''
@@ -47,12 +46,27 @@ class Machine:
             GPIO.setmode(GPIO.BCM)
         else:
             raise ValueError('GPIO mode can only be BCM or BOARD.')
-        self.__i2cbus = smbus2.SMBus(i2cbus)
+        
+        self.__i2c_enabled = False
+        if i2cbus is not None:
+            import smbus2
+            self.__i2cbus = smbus2.SMBus(i2cbus)
+            self.__i2c_enabled = True
+
         self.__intialize_logger(enable_logging)
         self.__clang_enabled = self.__is_clang_format_installed()
         self._devices = []
         self._pin_mapping = []
 
+
+
+    @property
+    def i2c_enabled(self) -> bool:
+        """
+        I2C interface enabled
+        """
+        return self.__i2c_enabled
+    
 
 
     @property
@@ -154,6 +168,8 @@ class Machine:
         :param force: Force read flag
         :return: Read byte value
         """
+        if not self.__i2c_enabled:
+            raise Exception('I2C bus is not enabled.')
         return self.__i2cbus.read_byte(address, force)
     
 
@@ -168,6 +184,8 @@ class Machine:
         :param force: Force read flag
         :return: 2-byte word
         """
+        if not self.__i2c_enabled:
+            raise Exception('I2C bus is not enabled.')
         return self.__i2cbus.read_word_data(address, register, force)
     
 
@@ -182,6 +200,8 @@ class Machine:
         :param force: Force read flag
         :return: Read byte value
         """
+        if not self.__i2c_enabled:
+            raise Exception('I2C bus is not enabled.')
         return self.__i2cbus.read_byte_data(address, register, force)
     
 
@@ -197,6 +217,8 @@ class Machine:
         :param force: Force read flag
         :return: List of bytes
         """
+        if not self.__i2c_enabled:
+            raise Exception('I2C bus is not enabled.')
         return self.__i2cbus.read_i2c_block_data(address, register, length, force)
     
 
@@ -209,6 +231,8 @@ class Machine:
         :param value: Value to write
         :param force: Force write flag
         """
+        if not self.__i2c_enabled:
+            raise Exception('I2C bus is not enabled.')
         self.__i2cbus.write_byte(address, value, force)
 
 
@@ -223,6 +247,8 @@ class Machine:
         :param value: Word value to write
         :param force: Force write flag
         """
+        if not self.__i2c_enabled:
+            raise Exception('I2C bus is not enabled.')
         self.__i2cbus.write_word_data(address, register, value, force)
 
 
@@ -237,6 +263,8 @@ class Machine:
         :param value: Byte value to write
         :param force: Force write flag
         """
+        if not self.__i2c_enabled:
+            raise Exception('I2C bus is not enabled.')
         self.__i2cbus.write_byte_data(address, register, value, force)
 
 
@@ -251,6 +279,8 @@ class Machine:
         :param data: List of byte values to write
         :param force: Force write flag
         """
+        if not self.__i2c_enabled:
+            raise Exception('I2C bus is not enabled.')
         self.__i2cbus.write_block_data(address, register, data, force)
 
 
