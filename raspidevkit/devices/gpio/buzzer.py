@@ -18,8 +18,7 @@ class ActiveBuzzer(GpioDevice):
         pin_setup = {
             str(pin): OUTPUT
         }
-        super().__init__(pin_setup, device_type=OUTPUT)
-        self._machine = machine
+        super().__init__(machine, pin_setup, device_type=OUTPUT)
         self._state = False
 
 
@@ -38,7 +37,7 @@ class ActiveBuzzer(GpioDevice):
         Turn this buzzer on
         """
         if not self.state:
-            self._machine.gpio_write(self.pin, True)
+            self.gpio_write(self.pin, True)
             self._state = True
 
 
@@ -48,7 +47,7 @@ class ActiveBuzzer(GpioDevice):
         Turn this buzzer off
         """
         if self.state:
-            self._machine.gpio_write(self.pin, False)
+            self.gpio_write(self.pin, False)
             self._state = False
 
 

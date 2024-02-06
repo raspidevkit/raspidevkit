@@ -12,10 +12,11 @@ except (RuntimeError, ModuleNotFoundError):
 
 
 class GpioDevice:
-    def __init__(self, pin_setup: dict, device_type: str) -> None:
+    def __init__(self, machine, pin_setup: dict, device_type: str) -> None:
         """
         Create a GPIO device. Pin setup can include both input and output.
 
+        :param machine: Machine instance
         :param pin_setup: Pin setup configuration with keys as pins and values as mode
         :param mode: Pin setup mode, can be `INPUT`, `PULL_UP`, `PULL_DOWN`, or `OUTPUT`
         :param device_type: This device device_type `INPUT` or `OUTPUT`
@@ -30,17 +31,9 @@ class GpioDevice:
         }
         ```
         """
-        for pin in pin_setup.keys():
-            if pin_setup[pin] == INPUT:
-                GPIO.setup(int(pin), GPIO.IN)
-            elif pin_setup[pin] == PULL_UP:
-                GPIO.setup(int(pin), GPIO.IN, pull_up_down=GPIO.PUD_UP)
-            elif pin_setup[pin] == PULL_DOWN:
-                GPIO.setup(int(pin), GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-            elif pin_setup[pin] == OUTPUT:
-                GPIO.setup(int(pin), GPIO.OUT)
-            else:
-                raise ValueError(f"Pin setup for {pin} is not valid")
+        self.__machine = machine
+        for pin, setup in pin_setup.items():
+            self.__machine.gpio_setup(int(pin), setup)
         
         self.__multi_pin = False
         if len(pin_setup.keys()) > 1:
@@ -82,6 +75,41 @@ class GpioDevice:
         if not self.__multi_pin:
             raise Exception('This is not accessible for single-pin device. Use pin instead')
         return self.__pins
+
+
+
+    def gpio_write(self, pin: int, value: bool):
+        """
+        Perform a GPIO output on pin
+
+        :param pin: The pin to write
+        :param value: Can be HIGH or LOW
+        :raises ValueError: If pin is not the device pin
+        """
+        if not self.__multi_pin and pin != self.pin:
+            raise ValueError('Pin not mapped to device')
+        
+        if self.__multi_pin and pin not in self.__pins:
+            raise ValueError('Pin not mapped to device')
+        
+        return self.__machine.gpio_write(pin, value)
+
+
+
+    def gpio_read(self, pin: int) -> bool:
+        """
+        Read the value from a GPIO pin
+        
+        :param pin: The pin to read
+        :return: Value, either True of False
+        """
+        if not self.__multi_pin and pin != self.pin:
+            raise ValueError('Pin not mapped to device')
+        
+        if self.__multi_pin and pin not in self.__pins:
+            raise ValueError('Pin not mapped to device')
+        
+        return self.__machine.gpio_read(pin)
 
 
 

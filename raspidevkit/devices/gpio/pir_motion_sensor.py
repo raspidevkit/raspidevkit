@@ -16,21 +16,20 @@ class PIRMotionSensor(GpioDevice):
         pin_setup = {
             str(pin): INPUT
         }
-        super().__init__(pin_setup, device_type=INPUT)
-        self._machine = machine
+        super().__init__(machine, pin_setup, device_type=INPUT)
 
 
 
     def read(self) -> bool:
         """
-        Read the current state of button
+        Read the current state of PIR Motion Sensor
 
         :return: State (on/off)
         """
-        return self._machine.gpio_read(self.pin)
+        return self.gpio_read(self.pin)
 
 
 
     def __repr__(self):
-        return f"Button <pin={self.pin}, state={self.read()}>"
+        return f"PIR Motion Sensor <pin={self.pin}, state={self.read()}>"
     

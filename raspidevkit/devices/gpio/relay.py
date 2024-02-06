@@ -8,7 +8,7 @@ from raspidevkit.constants import OUTPUT
 class Relay(GpioDevice):
     def __init__(self, machine, pin: int):
         """
-        Create a LED object
+        Create a Relay object
 
         :param machine: Machine instance as this device parent
         :param pin: Pin this device is attached to
@@ -16,9 +16,8 @@ class Relay(GpioDevice):
         pin_setup = {
             str(pin): OUTPUT
         }
-        super().__init__(pin_setup, device_type=OUTPUT)
+        super().__init__(machine, pin_setup, device_type=OUTPUT)
         self._state = False
-        self._machine = machine
 
 
 
@@ -36,7 +35,7 @@ class Relay(GpioDevice):
         Turn on relay. Has no effect if already turn on.
         """
         if not self._state:
-            self._machine.gpio_write(self.pin, True)
+            self.gpio_write(self.pin, True)
             self._state = True
 
 
@@ -46,7 +45,7 @@ class Relay(GpioDevice):
         Turn off relay. Has no effect if already turn off.
         """
         if self._state:
-            self._machine.gpio_write(self.pin, False)
+            self.gpio_write(self.pin, False)
             self._state = False
 
 

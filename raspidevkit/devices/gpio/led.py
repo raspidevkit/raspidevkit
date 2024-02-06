@@ -17,9 +17,8 @@ class Led(GpioDevice):
         pin_setup = {
             str(pin): OUTPUT
         }
-        super().__init__(pin_setup, device_type=OUTPUT)
+        super().__init__(machine, pin_setup, device_type=OUTPUT)
         self._state = False
-        self._machine = machine
 
 
 
@@ -37,7 +36,7 @@ class Led(GpioDevice):
         Turn on LED. Has no effect if already turn on.
         """
         if not self._state:
-            self._machine.gpio_write(self.pin, True)
+            self.gpio_write(self.pin, True)
             self._state = True
 
 
@@ -47,7 +46,7 @@ class Led(GpioDevice):
         Turn off LED. Has no effect if already turn off.
         """
         if self._state:
-            self._machine.gpio_write(self.pin, False)
+            self.gpio_write(self.pin, False)
             self._state = False
 
 

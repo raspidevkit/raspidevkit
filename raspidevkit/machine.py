@@ -2,7 +2,7 @@ from .machineutils import dictutils
 from .__logger import MachineLogger
 from .devices import Button, Led, RgbLed, ActiveBuzzer, LightSensor, PIRMotionSensor, \
                      PassiveBuzzer, ServoMotor, Relay, L298NDriver, Sim808, Arduino
-from .constants import INPUT, OUTPUT
+from .constants import INPUT, PULL_UP, PULL_DOWN, OUTPUT
 from typing import Union
 
 import sys
@@ -127,6 +127,10 @@ class Machine:
         """
         if setup.upper() == INPUT:
             GPIO.setup(pin, GPIO.IN)
+        elif setup.upper() == PULL_UP:
+            GPIO.setup(int(pin), GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        elif setup.upper() == PULL_DOWN:
+            GPIO.setup(int(pin), GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         elif setup.upper() == OUTPUT:
             GPIO.setup(pin, GPIO.OUT)
         else:

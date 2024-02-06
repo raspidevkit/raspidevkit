@@ -17,8 +17,7 @@ class LightSensor(GpioDevice):
         pin_setup = {
             str(pin): INPUT
         }
-        super().__init__(pin_setup, device_type=INPUT)
-        self._machine = machine
+        super().__init__(machine, pin_setup, device_type=INPUT)
 
 
 
@@ -29,11 +28,11 @@ class LightSensor(GpioDevice):
         :return: Value
         """
         value = 0
-        self._machine.gpio_setup(self.pin, OUTPUT)
-        self._machine.gpio_write(self.pin, False)
+        self.gpio_setup(self.pin, OUTPUT)
+        self.gpio_write(self.pin, False)
         time.sleep(0.1)
-        self._machine.gpio_setup(self.pin, INPUT)
-        while not self._machine.gpio_read(self.pin):
+        self.gpio_setup(self.pin, INPUT)
+        while not self.gpio_read(self.pin):
             value += 1
         return value
 

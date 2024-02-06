@@ -21,10 +21,9 @@ class RgbLed(GpioDevice):
             str(pins[1]): OUTPUT,
             str(pins[2]): OUTPUT,
         }
-        super().__init__(pin_setup, device_type=OUTPUT)
+        super().__init__(machine, pin_setup, device_type=OUTPUT)
         self._color = None
         self._state = False
-        self._machine = machine
 
 
 
@@ -52,7 +51,7 @@ class RgbLed(GpioDevice):
         """
         if not self._state:
             for pin in self.pins:
-                self._machine.gpio_write(pin, True)
+                self.gpio_write(pin, True)
             self._state = True
             self._color = WHITE
 
@@ -64,7 +63,7 @@ class RgbLed(GpioDevice):
         """
         if self._state:
             for pin in self.pins:
-                self._machine.gpio_write(pin, False)
+                self.gpio_write(pin, False)
             self._state = False
             self._color = None
             
@@ -91,33 +90,33 @@ class RgbLed(GpioDevice):
 
         self._state = True
         if color == RED:
-            self._machine.gpio_write(self.pins[0], True)
-            self._machine.gpio_write(self.pins[1], False)
-            self._machine.gpio_write(self.pins[2], False)
+            self.gpio_write(self.pins[0], True)
+            self.gpio_write(self.pins[1], False)
+            self.gpio_write(self.pins[2], False)
         if color == GREEN:
-            self._machine.gpio_write(self.pins[0], False)
-            self._machine.gpio_write(self.pins[1], True)
-            self._machine.gpio_write(self.pins[2], False)
+            self.gpio_write(self.pins[0], False)
+            self.gpio_write(self.pins[1], True)
+            self.gpio_write(self.pins[2], False)
         if color == BLUE:
-            self._machine.gpio_write(self.pins[0], False)
-            self._machine.gpio_write(self.pins[1], False)
-            self._machine.gpio_write(self.pins[2], True)
+            self.gpio_write(self.pins[0], False)
+            self.gpio_write(self.pins[1], False)
+            self.gpio_write(self.pins[2], True)
         if color == YELLOW:
-            self._machine.gpio_write(self.pins[0], True)
-            self._machine.gpio_write(self.pins[1], True)
-            self._machine.gpio_write(self.pins[2], False)
+            self.gpio_write(self.pins[0], True)
+            self.gpio_write(self.pins[1], True)
+            self.gpio_write(self.pins[2], False)
         if color == MAGENTA:
-            self._machine.gpio_write(self.pins[0], True)
-            self._machine.gpio_write(self.pins[1], False)
-            self._machine.gpio_write(self.pins[2], True)
+            self.gpio_write(self.pins[0], True)
+            self.gpio_write(self.pins[1], False)
+            self.gpio_write(self.pins[2], True)
         if color == CYAN:
-            self._machine.gpio_write(self.pins[0], False)
-            self._machine.gpio_write(self.pins[1], True)
-            self._machine.gpio_write(self.pins[2], True)
+            self.gpio_write(self.pins[0], False)
+            self.gpio_write(self.pins[1], True)
+            self.gpio_write(self.pins[2], True)
         if color == WHITE:
-            self._machine.gpio_write(self.pins[0], True)
-            self._machine.gpio_write(self.pins[1], True)
-            self._machine.gpio_write(self.pins[2], True) 
+            self.gpio_write(self.pins[0], True)
+            self.gpio_write(self.pins[1], True)
+            self.gpio_write(self.pins[2], True) 
 
 
 

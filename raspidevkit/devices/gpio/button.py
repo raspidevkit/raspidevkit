@@ -16,8 +16,7 @@ class Button(GpioDevice):
         pin_setup = {
             str(pin): PULL_DOWN
         }
-        super().__init__(pin_setup, device_type=INPUT)
-        self._machine = machine
+        super().__init__(machine, pin_setup, device_type=INPUT)
 
 
 
@@ -27,7 +26,7 @@ class Button(GpioDevice):
 
         :return: State (on/off)
         """
-        return self._machine.gpio_read(self.pin)
+        return self.gpio_read(self.pin)
 
 
 

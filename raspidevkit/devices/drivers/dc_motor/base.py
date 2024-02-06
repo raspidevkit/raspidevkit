@@ -29,7 +29,7 @@ class DcMotorDriver:
         }
         ```
         """
-        self._machine = machine
+        self.__machine = machine
         self._max_motor = len(motor_pin_setup.keys())
         self._motors = []
 
@@ -60,7 +60,18 @@ class DcMotorDriver:
         :param pin: The pin to write
         :param value: Can be HIGH or LOW
         """
-        self._machine.gpio_write(pin, value)
+        self.__machine.gpio_write(pin, value)
+
+
+
+    def gpio_setup(self, pin: int,  setup: str):
+        """
+        Explicitly setup a GPIO pin
+
+        :param pin: Pin to setup
+        :param setup: Pin mode (INPUT or OUTPUT)
+        """
+        self.__machine.gpio_setup(pin, setup)
 
 
 
@@ -74,7 +85,7 @@ class DcMotorDriver:
 
 
 class DcMotor(GpioDevice, PwmDevice):
-    def __init__(self, driver, pin_setup: dict[str, str], is_pwm: bool = False) -> None:
+    def __init__(self, driver: DcMotorDriver, pin_setup: dict[str, str], is_pwm: bool = False) -> None:
         """
         Base class for DcMotors object. Must be spawned by a DcMotorDriver class.
 
@@ -91,7 +102,7 @@ class DcMotor(GpioDevice, PwmDevice):
         }
         ```
         """
-        self._driver = driver
+        self.__driver = driver
         self.__is_pwm = is_pwm
         self._state = False
         required_keys = ['EN', 'A', 'B']
@@ -107,14 +118,14 @@ class DcMotor(GpioDevice, PwmDevice):
         for _, pin in pin_setup.items():
             gpio_pins[pin] = OUTPUT
 
-        super().__init__(pin_setup=gpio_pins, device_type=OUTPUT)
+        super().__init__(machine=self.__driver, pin_setup=gpio_pins, device_type=OUTPUT)
 
         if is_pwm:
             super(PwmDevice, self).__init__(pin_setup.pop('EN'), frequency=1000)
             self.__is_pwm = True
             
-        self._driver.gpio_write(self.__pin_a, True)
-        self._driver.gpio_write(self.__pin_b, False)
+        self.__driver.gpio_write(self.__pin_a, True)
+        self.__driver.gpio_write(self.__pin_b, False)
 
         self.__direction = CLOCKWISE
         self.__speed = 100
@@ -187,7 +198,7 @@ class DcMotor(GpioDevice, PwmDevice):
         if self.__is_pwm:
             self.start(self.__speed)
         else:
-            self._driver.gpio_write(self.__pin_en, True)
+            self.__driver.gpio_write(self.__pin_en, True)
         self._state = True
 
 
@@ -202,7 +213,7 @@ class DcMotor(GpioDevice, PwmDevice):
         if self.__is_pwm:
             super().stop()
         else:
-            self._driver.gpio_write(self.__pin_en, False)
+            self.__driver.gpio_write(self.__pin_en, False)
         self._state = False
 
 
@@ -234,9 +245,9 @@ class DcMotor(GpioDevice, PwmDevice):
             raise ValueError('Incorrect direction value. Use raspidev.CLOCKWISE or raspidev.COUNTER_CLOCKWISE')
 
         if direction == CLOCKWISE:
-            self._driver.gpio_write(self.__pin_a, True)
-            self._driver.gpio_write(self.__pin_b, False)
+            self.__driver.gpio_write(self.__pin_a, True)
+            self.__driver.gpio_write(self.__pin_b, False)
         
         if direction == COUNTER_CLOCKWISE:
-            self._driver.gpio_write(self.__pin_a, False)
-            self._driver.gpio_write(self.__pin_b, True)
+            self.__driver.gpio_write(self.__pin_a, False)
+            self.__driver.gpio_write(self.__pin_b, True)
