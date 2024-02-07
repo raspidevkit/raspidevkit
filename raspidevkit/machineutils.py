@@ -167,3 +167,36 @@ class mathutil:
         """
         return (x - in_min) * (out_max - out_min) // (in_max - in_min) + out_min
     
+
+
+    @staticmethod
+    def convert_distance(distance: float, measure_in: str, measure_out: str) -> float:
+        """
+        Convert the given distance from `measure_in` to `measure_out`
+        Available measures: `cm`, `inch`, `ft`, `m`
+
+        :param distance: Input distance
+        :param measure_in: Input measure unit
+        :param measure_out: Output measure unit
+        :return: Converted distance
+        """
+        conversion_factors = {
+            'cm': {'inch': 0.393701, 'ft': 0.0328084, 'm': 0.01},
+            'inch': {'cm': 2.54, 'ft': 0.0833333, 'm': 0.0254},
+            'ft': {'cm': 30.48, 'inch': 12, 'm': 0.3048},
+            'm': {'cm': 100, 'inch': 39.3701, 'ft': 3.28084}
+        }
+
+        if measure_in not in conversion_factors \
+            or measure_out not in conversion_factors:
+            raise ValueError("Invalid input or output measure unit")
+
+        if not isinstance(distance, (int, float)):
+            raise ValueError("Distance must be a number")
+
+        if measure_in == measure_out:
+            return distance
+        
+        factor = dictutils.get(conversion_factors, measure_in, measure_out)
+        converted_distance = distance * factor
+        return converted_distance

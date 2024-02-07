@@ -1,7 +1,8 @@
 from .machineutils import dictutils
 from .__logger import MachineLogger
 from .devices import Button, Led, RgbLed, ActiveBuzzer, LightSensor, PIRMotionSensor, \
-                     PassiveBuzzer, ServoMotor, Relay, L298NDriver, Sim808, Arduino
+                     PassiveBuzzer, ServoMotor, Relay, L298NDriver, Sim808, Arduino, \
+                     UltrasonicSensor
 from .constants import INPUT, PULL_UP, PULL_DOWN, OUTPUT
 from typing import Union
 
@@ -436,7 +437,7 @@ class Machine:
 
     def attach_servo_motor(self, pin: int) -> ServoMotor:
         """
-        Attach a PIR motion sensor to this machine
+        Attach a servo motor to this machine
 
         :param pin: Pin to use
         """
@@ -445,6 +446,20 @@ class Machine:
         self._devices.append(servo_motor)
         self.logger.info(f'Servo motor attached to pin: {pin}')
         return servo_motor
+    
+
+
+    def attach_ultrasonic_sensor(self, pins: tuple[int, str]) -> ServoMotor:
+        """
+        Attach a ultrasonic sensor to this machine
+
+        :param pins: Tuple of pins to use, in RGB order (trigger, echo)
+        """
+        self._validate_pin(pins)
+        ultrasonic_sensor = UltrasonicSensor(self, pins)
+        self._devices.append(ultrasonic_sensor)
+        self.logger.info(f'Ultrasonic sensors attached to pin: {pins}')
+        return ultrasonic_sensor
     
 
 
