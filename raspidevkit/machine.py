@@ -120,7 +120,7 @@ class Machine:
         logging_format = logging.Formatter(format)
         main_handler = logging.FileHandler(file)
         main_handler.setFormatter(logging_format)
-        self.logger = MachineLogger(__name__, enabled=enabled)
+        self.logger = MachineLogger(__name__, enabled=enabled or debug)
         self.logger.addHandler(main_handler)
         self.logger.setLevel(level)
         self.logger.info('Logger initialized.')
