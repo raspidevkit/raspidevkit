@@ -457,6 +457,8 @@ class Machine:
         if not self.__arduino_cli_installed:
             raise Exception('Arduino CLI not found')
         
+        self.logger.info('Starting arduino code upload')
+        start = time.time()
         abs_path = fileutil.get_absolute_path(file_path)
         self.compile_arduino_code(abs_path, fqbn)
         result = subprocess.run(['arduino-cli', 'upload',
@@ -466,9 +468,10 @@ class Machine:
                                 shell=True, 
                                 capture_output=True, 
                                 text = True)
-        
+        end = time.time()
         if result.returncode == 1:
             raise Exception(result.stderr)
+        self.logger.info(f'Arduino code uploaded in {end - start} seconds')
 
 
 
