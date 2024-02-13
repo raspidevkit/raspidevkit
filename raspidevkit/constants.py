@@ -14,7 +14,6 @@ PULL_UP = 'PULL_UP'
 PULL_DOWN = 'PULL_DOWN'
 HIGH = 'HIGH'
 LOW = 'LOW'
-SERIAL_TERMINATOR = '\r\n'
 
 # Color Related Constants
 RED = 'RED'

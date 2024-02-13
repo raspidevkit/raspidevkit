@@ -1,6 +1,5 @@
 from .arduino_devices.arduino_led import ArduinoLed
 from raspidevkit.machineutils import dictutils, formatutil
-from raspidevkit.constants import SERIAL_TERMINATOR
 from typing import Union
 from string import Template
 
@@ -10,7 +9,11 @@ import pkg_resources
 
 
 class Arduino(serial.Serial):
-    def __init__(self, machine, port: str | None = None, baudrate: int = 9600, **kwargs) -> None:
+    def __init__(self, 
+                 machine, 
+                 port: Union[str,None] = None, 
+                 baudrate: int = 9600,
+                 **kwargs) -> None:
         """
         Initialize Arduino device
 
@@ -20,10 +23,11 @@ class Arduino(serial.Serial):
         :param **kwargs: Other args for serial.Serial object
         """
         super().__init__(port, baudrate, **kwargs)
+        self._terminator = '\r\n'
         self.__commands = [-1]
         self._devices = []
         self._pin_mapping = {}
-        self._machine = machine
+        self.__machine = machine
 
 
 
@@ -53,8 +57,9 @@ class Arduino(serial.Serial):
 
         :return: Arduino response
         """
-        response = self.read_until(SERIAL_TERMINATOR.encode())
-        return response.decode()
+        response = self.read_until(self._terminator.encode())
+        self.__machine.logger.debug(f'[SERIAL][READ] Returned: {response}')
+        return response.decode('utf-8').strip()
     
 
 
@@ -64,8 +69,9 @@ class Arduino(serial.Serial):
 
         :param command: Command to set, usually auto-generated when attaching devices
         """
-        self.write(f'{command}{SERIAL_TERMINATOR}')
+        self.__machine.logger.debug(f'[SERIAL][WRITE] Write on {self.port}: {command}')
         while True:
+            self.write(bytes(str(command) + self._terminator, 'utf-8'))
             response = self.read_response()
             if response.lower() == 'ok':
                 break
@@ -134,7 +140,7 @@ class Arduino(serial.Serial):
             for method, command in device.commands.items():
                 method_name = f'{method}_{str(device)}_{index}'
                 method_name = formatutil.snake_to_camel(method_name)
-                loop += f'else if(currentCommand == {command}){{ {method_name}(); }}\n\n'
+                loop += f'else if(currentCommand == {command}){{ {method_name}(); currentCommand = -1;}}\n\n'
 
         with open(template_path, 'r') as file:
             template_file = file.read()
@@ -142,7 +148,7 @@ class Arduino(serial.Serial):
         template_file = Template(template_file)
         content = template_file.substitute(header=headers,
                                            baudrate=self.baudrate,
-                                           terminator = formatutil.escape_whitespace(SERIAL_TERMINATOR),
+                                           terminator = formatutil.escape_whitespace(self._terminator),
                                            setup=setups,
                                            loop=loop,
                                            methods=methods)
@@ -150,7 +156,7 @@ class Arduino(serial.Serial):
         with open(output_file, 'w') as file:
             file.write(content)
 
-        if self._machine.clang_enabled:
+        if self.__machine.clang_enabled:
             self.__format_code(output_file)
 
 
@@ -167,7 +173,7 @@ class Arduino(serial.Serial):
                            check=True, 
                            shell=True)
         except subprocess.CalledProcessError as e:
-            self._machine.logger.error(f'Error formatting {file}: {e}')
+            self.__machine.logger.error(f'Error formatting {file}: {e}')
             
 
 

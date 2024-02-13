@@ -535,13 +535,13 @@ class Machine:
     
 
     
-    def attach_arduino(self, port: str) -> Arduino:
+    def attach_arduino(self, port: str, **kwargs) -> Arduino:
         """
         Attach an Arduino to this machine
 
         :param port: Port to use
         """
-        arduino = Arduino(self, port)
+        arduino = Arduino(self, port, **kwargs)
         self._devices.append(arduino)
         self.logger.info(f'Arduino attached to port: {port}')
         return arduino
