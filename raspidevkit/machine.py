@@ -36,6 +36,7 @@ class Machine:
                  gpio_mode: str = 'BCM',
                  i2cbus: Union[None, int] = None,
                  enable_logging: bool = False,
+                 debug: bool = False,
                  **kwargs) -> None:
         '''
         Create a machine class which different devices can be created from.
@@ -43,12 +44,14 @@ class Machine:
         :param gpio_mode: GPIO mode can be `BCM` or `BOARD` as `GPIO.setmode()`
         :param i2cbus: I2C bus to use, defaults to 1
         :param enable_logging: Enable logging, configuration can be set by passing in a config dictionary
+        :param debug: Set debug to true
         :param config: Config dictionary which will take priority. See sample config.
         '''
         default_config = {
             'logging': {
                 'format': '%(asctime)s [%(levelname)s] - %(message)s.',
-                'file': 'machine.log'
+                'file': 'machine.log',
+                'level': logging.INFO if not debug else logging.DEBUG
             }
         }
 
@@ -66,7 +69,8 @@ class Machine:
             self.__i2cbus = smbus2.SMBus(i2cbus)
             self.__i2c_enabled = True
 
-        self.__intialize_logger(enable_logging)
+        self.logger = None
+        self.__intialize_logger(enable_logging, debug)
         self.__clang_enabled = self.__is_clang_format_installed()
         self._devices = []
         self._pin_mapping = []
@@ -100,18 +104,30 @@ class Machine:
     
 
 
-    def __intialize_logger(self, enabled: bool):
+    def __intialize_logger(self, enabled: bool, debug: bool):
+        """
+        Initialize logger. `debug` variable will take priority
+        """
+        if debug:
+            enabled = True
+        if not enabled:
+            return
+        
         default_format = '%(asctime)s [%(levelname)s] - %(message)s.'
         default_file = 'machine.log'
         format = dictutils.get(self._config, 'logging', 'format', default=default_format)
         file = dictutils.get(self._config, 'logging', 'file', default=default_file)
+        if not debug:
+            level = dictutils.get(self._config, 'logging', 'level', default=logging.INFO)
+        else:
+            level = logging.DEBUG
 
         logging_format = logging.Formatter(format)
         main_handler = logging.FileHandler(file)
         main_handler.setFormatter(logging_format)
         self.logger = MachineLogger(__name__, enabled=enabled)
         self.logger.addHandler(main_handler)
-        self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(level)
         self.logger.info('Logger initialized.')
     
 
@@ -138,6 +154,7 @@ class Machine:
         :param pin: Pin to setup
         :param setup: Pin mode (INPUT or OUTPUT)
         """
+        self.logger.debug(f'[GPIO][SETUP] {pin}:{setup}')
         if setup.upper() == INPUT:
             GPIO.setup(pin, GPIO.IN)
         elif setup.upper() == PULL_UP:
@@ -158,6 +175,7 @@ class Machine:
         :param pin: The pin to write
         :param value: Can be HIGH or LOW
         """
+        self.logger.debug(f'[GPIO][WRITE] Write on {pin}: {value}')
         if value:
             GPIO.output(pin, GPIO.HIGH)
         else:
@@ -172,7 +190,9 @@ class Machine:
         :param pin: The pin to read
         :return: Value, either True of False
         """
+        self.logger.debug(f'[GPIO][READ] Read on: {pin}')
         value = GPIO.input(pin)
+        self.logger.debug(f'[GPIO][READ] Value from {pin}: {value}')
         return value
 
 
@@ -187,7 +207,10 @@ class Machine:
         """
         if not self.__i2c_enabled:
             raise Exception('I2C bus is not enabled.')
-        return self.__i2cbus.read_byte(address, force)
+        self.logger.debug(f'[I2C][READ] Read on {address}')
+        value = self.__i2cbus.read_byte(address, force)
+        self.logger.debug(f'[I2C][READ] Returned: {value}')
+        return value
     
 
 
@@ -203,7 +226,10 @@ class Machine:
         """
         if not self.__i2c_enabled:
             raise Exception('I2C bus is not enabled.')
-        return self.__i2cbus.read_word_data(address, register, force)
+        self.logger.debug(f'[I2C][READ] Read word data on {address}-{register}')
+        value = self.__i2cbus.read_word_data(address, register, force)
+        self.logger.debug(f'[I2C][READ] Returned: {value}')
+        return value
     
 
 
@@ -219,7 +245,10 @@ class Machine:
         """
         if not self.__i2c_enabled:
             raise Exception('I2C bus is not enabled.')
-        return self.__i2cbus.read_byte_data(address, register, force)
+        self.logger.debug(f'[I2C][READ] Read byte data on {address}-{register}')
+        value = self.__i2cbus.read_byte_data(address, register, force)
+        self.logger.debug(f'[I2C][READ] Returned: {value}')
+        return value
     
 
 
@@ -236,7 +265,10 @@ class Machine:
         """
         if not self.__i2c_enabled:
             raise Exception('I2C bus is not enabled.')
-        return self.__i2cbus.read_i2c_block_data(address, register, length, force)
+        self.logger.debug(f'[I2C][READ] Read block data ({length}) on {address}-{register}')
+        value = self.__i2cbus.read_i2c_block_data(address, register, length, force)
+        self.logger.debug(f'[I2C][READ] Returned: {value}')
+        return value
     
 
 
@@ -250,6 +282,7 @@ class Machine:
         """
         if not self.__i2c_enabled:
             raise Exception('I2C bus is not enabled.')
+        self.logger.debug(f'[I2C][WRITE] Write on {address}: {value}')
         self.__i2cbus.write_byte(address, value, force)
 
 
@@ -266,6 +299,7 @@ class Machine:
         """
         if not self.__i2c_enabled:
             raise Exception('I2C bus is not enabled.')
+        self.logger.debug(f'[I2C][WRITE] Write word data on {address}-{register}: {value}')
         self.__i2cbus.write_word_data(address, register, value, force)
 
 
@@ -282,6 +316,7 @@ class Machine:
         """
         if not self.__i2c_enabled:
             raise Exception('I2C bus is not enabled.')
+        self.logger.debug(f'[I2C][WRITE] Write yte data on {address}-{register}: {value}')
         self.__i2cbus.write_byte_data(address, register, value, force)
 
 
@@ -298,6 +333,7 @@ class Machine:
         """
         if not self.__i2c_enabled:
             raise Exception('I2C bus is not enabled.')
+        self.logger.debug(f'[I2C][WRITE] Write block data on {address}-{register}: {data}')
         self.__i2cbus.write_block_data(address, register, data, force)
 
 
