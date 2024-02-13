@@ -108,11 +108,6 @@ class Machine:
         """
         Initialize logger. `debug` variable will take priority
         """
-        if debug:
-            enabled = True
-        if not enabled:
-            return
-        
         default_format = '%(asctime)s [%(levelname)s] - %(message)s.'
         default_file = 'machine.log'
         format = dictutils.get(self._config, 'logging', 'format', default=default_format)
