@@ -1,10 +1,22 @@
 from .machineutils import dictutils
 from .__logger import MachineLogger
-from .devices import Button, Led, RgbLed, ActiveBuzzer, LightSensor, PIRMotionSensor, \
-                     PassiveBuzzer, ServoMotor, Relay, L298NDriver, Sim808, Arduino, \
-                     UltrasonicSensor
 from .constants import INPUT, PULL_UP, PULL_DOWN, OUTPUT
 from typing import Union
+from .devices import (
+    ActiveBuzzer,
+    Arduino,
+    Button,
+    Led,
+    L298NDriver,
+    LightSensor,
+    PassiveBuzzer,
+    PIRMotionSensor,
+    Relay,
+    RgbLed,
+    ServoMotor,
+    Sim808,
+    UltrasonicSensor
+)
 
 import sys
 import subprocess
