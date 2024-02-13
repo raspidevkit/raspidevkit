@@ -1,10 +1,11 @@
 from .arduino_devices.arduino_led import ArduinoLed
-from raspidevkit.machineutils import dictutils, formatutil
+from raspidevkit.machineutils import dictutils, formatutil, fileutil
 from typing import Union
 from string import Template
 
 import serial
 import subprocess
+import tempfile
 import pkg_resources
 
 
@@ -13,6 +14,7 @@ class Arduino(serial.Serial):
                  machine, 
                  port: Union[str,None] = None, 
                  baudrate: int = 9600,
+                 board: str = 'Arduino Uno',
                  **kwargs) -> None:
         """
         Initialize Arduino device
@@ -23,6 +25,7 @@ class Arduino(serial.Serial):
         :param **kwargs: Other args for serial.Serial object
         """
         super().__init__(port, baudrate, **kwargs)
+        self.board = board
         self._terminator = '\r\n'
         self.__commands = [-1]
         self._devices = []
@@ -158,6 +161,37 @@ class Arduino(serial.Serial):
 
         if self.__machine.clang_enabled:
             self.__format_code(output_file)
+
+
+
+    def compile(self, fresh: bool = False):
+        """
+        Generates, compile and upload code to the arduino
+          NOTE: Devices that are only attached up to this point
+                are in included in the sketch.
+
+        :param fresh: Bypass hash checking, will always compile sketch
+        """
+        name = 'raspidevkit.ino'
+        raspidevkit_folder = 'raspidevkit'
+        temp_dir = tempfile.gettempdir()
+        sketch_path = fr'{temp_dir}/{raspidevkit_folder}'
+        if not fileutil.does_path_exists(sketch_path):
+            fileutil.create_directory(sketch_path)
+        file_name = fr'{sketch_path}/{name}'
+        previous_hash = ''
+        if fileutil.does_file_exists(file_name):
+            previous_hash = fileutil.get_file_hash(file_name)
+        self.generate_code(file_name)
+        current_hash = fileutil.get_file_hash(file_name)
+
+        if previous_hash == current_hash and not fresh:
+            self.__machine.logger.info('Generated code matched with previously generated code. Skipping upload')
+            return
+        fbqn = self.__machine.get_arduino_boards()[self.board]
+        self.close()
+        self.__machine.upload_arduino_code(sketch_path, self.port, fbqn)
+        self.open()
 
 
 

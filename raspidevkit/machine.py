@@ -1,4 +1,4 @@
-from .machineutils import dictutils
+from .machineutils import dictutils, fileutil
 from .__logger import MachineLogger
 from .constants import INPUT, PULL_UP, PULL_DOWN, OUTPUT
 from typing import Union
@@ -21,6 +21,7 @@ from .devices import (
 import sys
 import subprocess
 import logging
+import time
 
 try:
     import RPi.GPIO as GPIO
@@ -37,6 +38,7 @@ class Machine:
                  i2cbus: Union[None, int] = None,
                  enable_logging: bool = False,
                  debug: bool = False,
+                 arduino_cli_path: Union[None, str] = None,
                  **kwargs) -> None:
         '''
         Create a machine class which different devices can be created from.
@@ -45,6 +47,7 @@ class Machine:
         :param i2cbus: I2C bus to use, defaults to 1
         :param enable_logging: Enable logging, configuration can be set by passing in a config dictionary
         :param debug: Set debug to true
+        :param arduino_cli_path: Path to Arduino CLI
         :param config: Config dictionary which will take priority. See sample config.
         '''
         default_config = {
@@ -72,6 +75,9 @@ class Machine:
         self.logger = None
         self.__intialize_logger(enable_logging, debug)
         self.__clang_enabled = self.__is_clang_format_installed()
+        self.__arduino_cli_installed = self.__is_arduino_cli_installed(arduino_cli_path)
+        self.__arduino_cli_path = arduino_cli_path if self.__arduino_cli_installed else None
+
         self._devices = []
         self._pin_mapping = []
 
@@ -92,6 +98,24 @@ class Machine:
         Clang format installed
         """
         return self.__clang_enabled
+    
+
+
+    @property
+    def arduino_cli_installed(self) -> bool:
+        """
+        Arduino CLI installed
+        """
+        return self.__arduino_cli_installed
+    
+
+
+    @property
+    def arduino_cli_path(self) -> Union[None, str]:
+        """
+        Arduino CLI path
+        """
+        return self.__arduino_cli_path
     
 
 
@@ -139,8 +163,31 @@ class Machine:
         except subprocess.CalledProcessError:
             self.logger.warning('Clang-format not found. Arduino generated code will not be formatted')
             return False
-    
+        
 
+
+    def __is_arduino_cli_installed(self, arduino_cli_path: str):
+        try:
+            subprocess.run(['arduino-cli', 'version'],
+                           stdout=subprocess.PIPE, 
+                           stderr=subprocess.PIPE, 
+                           check=True,
+                           cwd=arduino_cli_path,
+                           shell=True)
+            self.logger.info('Arduino CLI found.')
+            return True
+        except subprocess.CalledProcessError:
+            self.logger.warning('Arduino CLI not found.')
+            return False
+
+
+
+    ######################################################
+    #                                                    #
+    #                   GPIO Interface                   #
+    #                                                    #
+    ######################################################
+        
 
     def gpio_setup(self, pin: int,  setup: str):
         """
@@ -190,6 +237,13 @@ class Machine:
         self.logger.debug(f'[GPIO][READ] Value from {pin}: {value}')
         return value
 
+
+
+    ######################################################
+    #                                                    #
+    #                   I2C Interface                    #
+    #                                                    #
+    ######################################################
 
 
     def i2c_read_byte(self, address: int, force: bool = False) -> int:
@@ -332,6 +386,98 @@ class Machine:
         self.__i2cbus.write_block_data(address, register, data, force)
 
 
+
+    ######################################################
+    #                                                    #
+    #               Arduino CLI Interface                #
+    #                                                    #
+    ######################################################
+        
+
+    def get_arduino_boards(self) -> dict:
+        """
+        Get available Arduino boards
+        """
+        if not self.__arduino_cli_installed:
+            raise Exception('Arduino CLI not found')
+        
+        result = subprocess.run(['arduino-cli', 'board', 'listall'], 
+                                check=True, 
+                                cwd=self.__arduino_cli_path, 
+                                shell=True, 
+                                capture_output=True, 
+                                text = True)
+        result_string = result.stdout
+        mapping = {}
+        lines = result_string.strip().split("\n")
+        for line in lines:
+            parts = line.split()
+            if len(parts) >= 2:
+                board_name = " ".join(parts[:-1])
+                fqbn = parts[-1]
+                mapping[board_name] = fqbn
+        return mapping
+    
+
+
+    def compile_arduino_code(self, file_path: str, fqbn: str):
+        """
+        Compile arduino code
+
+        :param file_path: Sketch file path (should be a directory)
+        :param fqbn: Fully Qualified Board Name
+        :raises Exception: If build error occurs
+        """
+        if not self.__arduino_cli_installed:
+            raise Exception('Arduino CLI not found')
+
+        abs_path = fileutil.get_absolute_path(file_path)
+        result = subprocess.run(['arduino-cli', 'compile',
+                                 '--fqbn', fqbn, abs_path], 
+                                cwd=self.__arduino_cli_path, 
+                                shell=True, 
+                                capture_output=True, 
+                                text = True)
+        
+        if result.returncode == 1:
+            raise Exception(result.stderr)
+        
+
+
+    def upload_arduino_code(self, file_path: str, port: str, 
+                            fqbn: str, compile: bool = True):
+        """
+        Upload a sketch to the arduino
+
+        :param file_path: Sketch file path (should be a directory)
+        :param port: Arduino port
+        :param fqbn: Fully Qualified Board Name
+        :param compile: Try to compile the arduino first before upload
+        """
+        if not self.__arduino_cli_installed:
+            raise Exception('Arduino CLI not found')
+        
+        abs_path = fileutil.get_absolute_path(file_path)
+        self.compile_arduino_code(abs_path, fqbn)
+        result = subprocess.run(['arduino-cli', 'upload',
+                                 '-p', port, '--fqbn', fqbn, 
+                                 abs_path], 
+                                cwd=self.__arduino_cli_path, 
+                                shell=True, 
+                                capture_output=True, 
+                                text = True)
+        
+        if result.returncode == 1:
+            raise Exception(result.stderr)
+
+
+
+    ######################################################
+    #                                                    #
+    #                  Devices Interface                 #
+    #                                                    #
+    ######################################################
+        
 
     def _validate_pin(self, pin: Union[int, list[int], tuple[int]]):
         """
