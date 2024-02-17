@@ -24,13 +24,14 @@ class Arduino(serial.Serial):
         :param baudrate: Baudrate of serial commnication
         :param **kwargs: Other args for serial.Serial object
         """
+        from raspidevkit import Machine
         super().__init__(port, baudrate, **kwargs)
         self.board = board
         self._terminator = '\r\n'
         self.__commands = [-1]
         self._devices = []
         self._pin_mapping = {}
-        self.__machine = machine
+        self.__machine: Machine = machine
 
 
 

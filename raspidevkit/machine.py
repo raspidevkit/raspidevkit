@@ -21,6 +21,7 @@ from .devices import (
 import sys
 import subprocess
 import logging
+import re
 import time
 
 try:
@@ -77,6 +78,7 @@ class Machine:
         self.__clang_enabled = self.__is_clang_format_installed()
         self.__arduino_cli_installed = self.__is_arduino_cli_installed(arduino_cli_path)
         self.__arduino_cli_path = arduino_cli_path if self.__arduino_cli_installed else None
+        self.__setup_arduino_libraries()
 
         self._devices = []
         self._pin_mapping = []
@@ -179,6 +181,39 @@ class Machine:
         except subprocess.CalledProcessError:
             self.logger.warning('Arduino CLI not found.')
             return False
+
+
+
+    def __setup_arduino_libraries(self):
+        if not self.__arduino_cli_installed:
+            self.logger.info(f'Skipping arduino library setup')
+            return
+        
+        required_libraries = {
+            'Servo': '1.2.1',
+        }
+        installed_libraries = self.get_installed_arduino_libraries()
+        for name, version in required_libraries.items():
+            if name not in installed_libraries.keys():
+                self.log_and_print(f'Installing {name}@{version}')
+                self.install_arduino_library(name=name, version=version)
+            elif installed_libraries.get(name) != version:
+                self.log_and_print(f'Updating {name} to {version}')
+                self.install_arduino_library(name=name, version=version)
+            else:
+                # Skip
+                pass
+
+
+
+    def log_and_print(self, msg: str):
+        """
+        Log and print msg as the same time
+
+        :param msg: Message
+        """
+        self.logger.info(msg)
+        print(msg)
 
 
 
@@ -419,6 +454,95 @@ class Machine:
         return mapping
     
 
+
+    def get_installed_arduino_libraries(self) -> dict:
+        """
+        Get a list of installed libraries in the arduino
+
+        :return: List of installed libraries and version
+        """
+        if not self.__arduino_cli_installed:
+            raise Exception('Arduino CLI not found')
+        
+        result = subprocess.run(['arduino-cli', 'lib', 'list'], 
+                                check=True, 
+                                cwd=self.__arduino_cli_path, 
+                                shell=True, 
+                                capture_output=True, 
+                                text = True)
+        result_string = result.stdout
+        library_info_map = {}
+        lines = result_string.strip().split("\n")
+        for line in lines[1:]:
+            name_pattern = r'([\w ]+)\d+\.\d+\.\d+'
+            version_pattern = r'(\d+\.\d+\.\d+)'
+            name = re.search(name_pattern, line).group(1).strip()
+            version = re.search(version_pattern, line).group(1).strip()
+            library_info_map[name] = version
+        return library_info_map
+
+
+
+    def install_arduino_library(self, name: str, version: str = 'latest',
+                                git_url: str = '', zip_path: str = ''):
+        """
+        Install an Arduino library
+        Priority: zip_path > git_url > name
+
+        :param name: Arduino library name
+        :param version: Library version
+        :param git_url: Git url of library
+        :param zip_path: Path to library zip
+        """
+        version_pattern = r'(\d+\.\d+\.\d+)'
+        if version != 'latest' and not re.search(version_pattern, version):
+            raise Exception('Incorrect version format')
+        
+        command = ['arduino-cli', 'lib', 'install']
+        if zip_path:
+            command.append('--zip-path')
+            command.append(zip_path)
+            self.logger.info(f'Installing library via zip path: {zip_path}')
+        elif git_url:
+            command.append('--git_url')
+            url = f'{git_url}{'#' + version if version != 'latest' else ''}'
+            command.append(url)
+            self.logger.info(f'Installing library via git url: {git_url}')
+        else:
+            name = f'{name}{'@' + version if version != 'latest' else ''}'
+            command.append(name)
+            self.logger.info(f'Installing library via name: {name}')
+        
+        result = subprocess.run(command, 
+                                cwd=self.__arduino_cli_path, 
+                                shell=True, 
+                                capture_output=True, 
+                                text = True)
+        
+        if result.returncode == 1:
+            raise Exception(result.stderr)
+            
+
+
+    def uninstall_arduino_library(self, library: str):
+        """
+        Uninstall an Arduino library
+
+        :param library: Library name
+        """
+        if library not in self.get_installed_arduino_libraries():
+            raise Exception('Library not installed')
+        
+        result = subprocess.run(['arduino-cli', 'lib',
+                                 'uninstall', library], 
+                                cwd=self.__arduino_cli_path, 
+                                shell=True, 
+                                capture_output=True, 
+                                text = True)
+        
+        if result.returncode == 1:
+            raise Exception(result.stderr)
+        
 
     def compile_arduino_code(self, file_path: str, fqbn: str):
         """
