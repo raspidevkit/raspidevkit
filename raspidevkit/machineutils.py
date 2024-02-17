@@ -1,3 +1,5 @@
+import hashlib
+import os
 import re
 
 class dictutils:
@@ -106,6 +108,94 @@ class formatutil:
     
 
 
+class fileutil:
+    """
+    File utility helper
+    """
+
+    @staticmethod
+    def does_file_exists(file_path: str) -> bool:
+        """
+        Check if a file exists
+
+        :param file_path: File path to check
+        :return: Exists or not
+        """
+        file_path = os.path.normpath(file_path)
+        return os.path.exists(file_path)
+    
+
+
+    @staticmethod
+    def does_path_exists(path: str) -> bool:
+        """
+        Check if a path exists
+
+        :param file_path: Path to check
+        :return: Exists or not
+        """
+        path = os.path.normpath(path)
+        return os.path.exists(path)
+    
+
+
+    @staticmethod
+    def get_parent_directory(file_path: str) -> str:
+        """
+        Get the parent directory of a file
+
+        :param file_path: File to process
+        :return: Parent directory
+        """
+        return os.path.dirname(file_path)
+    
+
+
+    @staticmethod
+    def create_directory(directory: str, cwd: str = None):
+        """
+        Create a directory and its parent directory if not exist
+
+        :param directory: Directory path to create
+        :param cwd: The current working directory
+        """
+        prev_cwd = os.getcwd()
+        if cwd:
+            os.chdir(cwd)
+        os.makedirs(directory)
+        os.chdir(prev_cwd)
+
+
+
+    @staticmethod
+    def get_absolute_path(file_path: str) -> str:
+        """
+        Get the absolute file path of a path
+
+        :param file_path: Relative file path
+        :return: Absolute file path
+        """
+        return os.path.abspath(file_path)
+
+
+
+    @staticmethod
+    def get_file_hash(file_path: str, algorithm: str='sha256') -> str:
+        """
+        Calculate and get the file hash of a given file
+
+        :param file_path: File to process
+        :param algorithm: Hash algorithm to use
+        :return: File hash
+        """
+        hasher = hashlib.new(algorithm)
+        with open(file_path, 'rb') as f:
+            for chunk in iter(lambda: f.read(4096), b''):
+                hasher.update(chunk)
+        return hasher.hexdigest()
+
+
+    
 class soundutil:
     """
     Sound utility helper
