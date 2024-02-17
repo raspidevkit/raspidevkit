@@ -27,7 +27,9 @@ class Arduino(serial.Serial):
         from raspidevkit import Machine
         super().__init__(port, baudrate, **kwargs)
         self.board = board
-        self._terminator = '\r\n'
+        self._cmd_terminator = '\n'
+        self._data_terminator = '\r\n'
+        self._whitespace_sub = '||'
         self.__commands = [-1]
         self._devices = []
         self._pin_mapping = {}
@@ -54,14 +56,22 @@ class Arduino(serial.Serial):
 
 
 
-    def read_response(self) -> str:
+    def read_response(self, origin: str) -> str:
         """
         Get the response from Arduino Serial COM. \n
         Uses serial.readline()
 
+        :param origin: Response origin can be (`cmd` or `data`)
         :return: Arduino response
         """
-        response = self.read_until(self._terminator.encode())
+        if origin == 'cmd':
+            terminator = self._cmd_terminator
+        elif origin == 'data':
+            terminator = self._data_terminator
+        else:
+            raise ValueError('Unknown arduino response origin')
+        
+        response = self.read_until(terminator.encode())
         self.__machine.logger.debug(f'[SERIAL][READ] Returned: {response}')
         return response.decode('utf-8').strip()
     
@@ -75,12 +85,29 @@ class Arduino(serial.Serial):
         """
         self.__machine.logger.debug(f'[SERIAL][WRITE] Write on {self.port}: {command}')
         while True:
-            self.write(bytes(str(command) + self._terminator, 'utf-8'))
-            response = self.read_response()
-            if response.lower() == 'ok':
+            self.write(bytes(str(command) + self._cmd_terminator, 'utf-8'))
+            response = self.read_response(origin='cmd')
+            if 'ok' in response.lower():
                 break
         
 
+
+    def send_data(self, data: str):
+        """
+        Send a data to arduino
+
+        :param data: Data to send
+        """
+        self.__machine.logger.debug(f'[SERIAL][WRITE] Write on {self.port}: {data}')
+        raw_data = f'{data}{self._data_terminator}'.replace(' ', self._whitespace_sub)
+        data = bytes(raw_data, 'utf-8')
+        while True:
+            self.write(data)
+            response = self.read_response(origin='data')
+            if 'ok' in response.lower():
+                break
+
+        
 
     def _validate_pin(self, pin: Union[int, list[int]]):
         """
@@ -152,7 +179,9 @@ class Arduino(serial.Serial):
         template_file = Template(template_file)
         content = template_file.substitute(header=headers,
                                            baudrate=self.baudrate,
-                                           terminator = formatutil.escape_whitespace(self._terminator),
+                                           cmd_terminator = formatutil.escape_whitespace(self._cmd_terminator),
+                                           data_terminator = formatutil.escape_whitespace(self._data_terminator),
+                                           whitespace_sub = formatutil.escape_whitespace(self._whitespace_sub),
                                            setup=setups,
                                            loop=loop,
                                            methods=methods)
