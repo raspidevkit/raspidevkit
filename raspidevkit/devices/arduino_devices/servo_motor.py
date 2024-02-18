@@ -6,7 +6,8 @@ import time
 
 
 class ServoMotor(ArduinoDevice):
-    def __init__(self, arduino, pin: int, commands: dict[str, Union[str, int]], uuid: str = '') -> None:
+    def __init__(self, arduino, pin: int, 
+                 commands: dict[str, Union[str, int]], uuid: str = '') -> None:
         """
         Create a Servo Motor object attached to Arduino
 
@@ -28,14 +29,11 @@ class ServoMotor(ArduinoDevice):
         }
         super().__init__(pin_setup=pin_setup, 
                          device_type=OUTPUT, 
-                         commands=commands)
+                         commands=commands,
+                         uuid=uuid)
         all_methods = [
             'rotate'
         ]
-        if uuid:
-            self.__uuid = uuid
-        else:
-            self.__uuid = stringutil.generate_string(8)
 
         self.validate_commands(all_methods)
         self._method_code = self._map_method_code()
@@ -43,18 +41,9 @@ class ServoMotor(ArduinoDevice):
 
         self._state = False
         self._code_mapping['libraries'] = ['Servo.h']
-        self._code_mapping['global'] = f'Servo servo{uuid};'
-        self._code_mapping['setup'] = f'servo{uuid}.attach({pin});servo{uuid}.write(0);'
+        self._code_mapping['global'] = f'Servo servo{self.uuid};'
+        self._code_mapping['setup'] = f'servo{self.uuid}.attach({pin});servo{self.uuid}.write(0);'
         self._code_mapping['methods'] = self._method_code
-
-
-
-    @property
-    def uuid(self) -> str:
-        """
-        Device UUID
-        """
-        return self.__uuid
     
 
 
@@ -64,7 +53,7 @@ class ServoMotor(ArduinoDevice):
         """
         rotate_code = f'''String data = recieveData();
         int angle = data.toInt();
-        servo{self.__uuid}.write(angle);
+        servo{self.uuid}.write(angle);
         '''
         method_code = {
             'rotate': rotate_code,

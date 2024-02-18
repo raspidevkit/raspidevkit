@@ -1,5 +1,6 @@
 import sys
 from ..constants import INPUT, OUTPUT, PULL_UP, PULL_DOWN
+from raspidevkit.machineutils import stringutil
 from typing import Union
 
 try:
@@ -346,7 +347,8 @@ class I2CDevice:
 
 
 class ArduinoDevice:
-    def __init__(self, pin_setup: dict, device_type: str, commands: dict[str, Union[str, int]]) -> None:
+    def __init__(self, pin_setup: dict, device_type: str, 
+                 commands: dict[str, Union[str, int]], uuid: str = '') -> None:
         """
         Create a Arduino device.
 
@@ -355,6 +357,7 @@ class ArduinoDevice:
             \tcan be overriden
         :param device_type: This device device_type `INPUT`or `OUTPUT`
         :param commands: Dictionary of commands with methods as keys.
+        :param uuid: Optional UUID, if not given would randomly generate
         Sample command configuration:
         ```python
         commands = {
@@ -377,6 +380,12 @@ class ArduinoDevice:
                 pass
             else:
                 raise ValueError(f'Invalid value for pin {pin}')
+            
+        if uuid:
+            self.__uuid = uuid
+        else:
+            self.__uuid = stringutil.generate_string(8)
+
         self.__multi_pin = False
         if len(pin_setup.keys()) > 1:
             self.__multi_pin = True
@@ -398,6 +407,15 @@ class ArduinoDevice:
 
 
 
+    @property
+    def uuid(self) -> str:
+        """
+        Device UUID
+        """
+        return self.__uuid
+    
+
+    
     @property
     def device_type(self) -> str:
         """
