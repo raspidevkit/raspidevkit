@@ -1,5 +1,5 @@
 from .base import ArduinoDevice
-from .arduino_devices.arduino_led import ArduinoLed
+from .arduino_devices.arduino_led import Led
 from .arduino_devices.servo_motor import ServoMotor
 from raspidevkit.machineutils import dictutils, stringutil, fileutil
 from typing import Union
@@ -263,7 +263,7 @@ class Arduino(serial.Serial):
             
 
 
-    def attach_led(self, pin: int) -> ArduinoLed:
+    def attach_led(self, pin: int) -> Led:
         """
         Attach a LED to this arduino
 
@@ -275,7 +275,7 @@ class Arduino(serial.Serial):
         commands = self.generate_command_list(2)
         methods = ['turn_on', 'turn_off']
         command_map = dictutils.map_key_value(methods, commands)
-        led = ArduinoLed(self, pin, command_map)
+        led = Led(self, pin, command_map)
         self._devices.append(led)
         return led
 

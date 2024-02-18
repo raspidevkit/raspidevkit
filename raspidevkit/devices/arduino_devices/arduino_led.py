@@ -4,7 +4,7 @@ from typing import Union
 import time
 
 
-class ArduinoLed(ArduinoDevice):
+class Led(ArduinoDevice):
     def __init__(self, arduino, pin: int, commands: dict[str, Union[str, int]]) -> None:
         """
         Create a LED object attached to Arduino
