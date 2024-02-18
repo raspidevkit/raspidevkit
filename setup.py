@@ -3,6 +3,8 @@ import setuptools
 setuptools.setup(
     name="raspidevkit",
     description="Easily control devices with Raspberry Pi",
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     version="0.0.1",
     url="https://github.com/raspidevkit/raspidevkit",
     author="DailyLollipops",
