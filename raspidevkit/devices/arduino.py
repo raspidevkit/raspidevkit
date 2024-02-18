@@ -290,7 +290,7 @@ class Arduino(serial.Serial):
         """
         self._validate_pin(pin)
         self._pin_used.append(pin)
-        commands = self.generate_command_list(2)
+        commands = self.generate_command_list(1)
         methods = ['rotate']
         uuid = self.get_attached_device_type(ServoMotor) + 1
         command_map = dictutils.map_key_value(methods, commands)
