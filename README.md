@@ -137,6 +137,18 @@ We use Pull Requests (PRs) to review and merge changes into the main codebase. I
 ## License
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/raspidevkit/raspidevkit/blob/development/LICENSE) file for details.
 
+## Third-Party Libraries
+We would like to thank the developers of the following third-party libraries, which were used in the development of this project:
+
+- [RPi.GPIO](https://pypi.org/project/RPi.GPIO/): Fundamental package for the GPIO interface of the library.
+- [fake-rpi](https://pypi.org/project/fake-rpi/): Used for development on other platforms without using Raspberry Pi.
+- [smbus2](https://pypi.org/project/smbus2/): Fundamental package for the I2C interface of the library.
+- [pyserial](https://pypi.org/project/pyserial/): Fundamental package for the serial interface of the library.
+- [arduino-cli](https://arduino.github.io/arduino-cli/latest/): For the great solutions for automating development with Arduino Boards.
+- and others...
+
+These libraries have been instrumental in achieving various functionalities within our project. We express our gratitude to the developers for their hard work and dedication in creating and maintaining these essential tools.
+
 ## TODO
 - [ ] Launch to PyPi
 - [ ] Create documentation
