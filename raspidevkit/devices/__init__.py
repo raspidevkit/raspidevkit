@@ -11,5 +11,5 @@ from .gpio.ultrasonic_sensor import UltrasonicSensor
 
 from .gpio.drivers.dc_motor.l298n import L298NDriver
 
-from .sim808 import Sim808
-from .arduino import Arduino
+from .serial.sim808 import Sim808
+from .serial.arduino import Arduino
