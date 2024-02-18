@@ -1,6 +1,5 @@
 from ..base import ArduinoDevice
 from raspidevkit.constants import OUTPUT
-from raspidevkit.machineutils import stringutil
 from typing import Union
 import time
 
