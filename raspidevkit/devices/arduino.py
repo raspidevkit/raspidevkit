@@ -1,4 +1,6 @@
+from .base import ArduinoDevice
 from .arduino_devices.arduino_led import ArduinoLed
+from .arduino_devices.servo_motor import ServoMotor
 from raspidevkit.machineutils import dictutils, formatutil, fileutil
 from typing import Union
 from string import Template
@@ -32,7 +34,7 @@ class Arduino(serial.Serial):
         self._whitespace_sub = '||'
         self.__commands = [-1]
         self._devices = []
-        self._pin_mapping = {}
+        self._pin_used = []
         self.__machine: Machine = machine
 
 
@@ -117,11 +119,11 @@ class Arduino(serial.Serial):
         :raises Exception: If pin is already in use
         """
         if isinstance(pin, int):
-            if str(pin) in list(self._pin_mapping.keys()):
+            if pin in self._pin_used:
                 raise Exception(f'Pin {pin} already in use.')
         if isinstance(pin, list):
             for p in pin:
-                if str(pin) in list(self._pin_mapping.keys()):
+                if p in self._pin_used:
                     raise Exception(f'Pin {pin} already in use.')
         
 
@@ -140,11 +142,27 @@ class Arduino(serial.Serial):
 
 
 
+    def get_attached_device_type(self, _class: ArduinoDevice) -> int:
+        """
+        Get the number of instances a device type is attached to this arduino
+
+        :param _class: Arduino Device Class
+        :return: Number of instance of device type
+        """
+        count = 0
+        for device in self._devices:
+            if device.__class__ == _class:
+                count += 1
+        return count
+
+
+
     def generate_code(self, output_file: str):
         """
         Generate a code to be uploaded to Arduino
         """
         headers = ''
+        global_vars = ''
         setups = ''
         methods = ''
         loop = ''
@@ -156,6 +174,9 @@ class Arduino(serial.Serial):
             if libraries:
                 for library in libraries:
                     headers += f'#include <{library}>\n'
+
+            # Add global variables
+            global_vars += device.code['global']
 
             # Append setup code
             setups += device.code['setup']
@@ -178,6 +199,7 @@ class Arduino(serial.Serial):
 
         template_file = Template(template_file)
         content = template_file.substitute(header=headers,
+                                           global_vars = global_vars,
                                            baudrate=self.baudrate,
                                            cmd_terminator = formatutil.escape_whitespace(self._cmd_terminator),
                                            data_terminator = formatutil.escape_whitespace(self._data_terminator),
@@ -249,9 +271,30 @@ class Arduino(serial.Serial):
         :return: ArduinoLed
         """
         self._validate_pin(pin)
+        self._pin_used.append(pin)
         commands = self.generate_command_list(2)
         methods = ['turn_on', 'turn_off']
         command_map = dictutils.map_key_value(methods, commands)
         led = ArduinoLed(self, pin, command_map)
         self._devices.append(led)
         return led
+
+
+
+    def attach_servo_motor(self, pin: int) -> ServoMotor:
+        """
+        Attach a servo motor to this arduino
+
+        :param pin: Arduino pin to attach servo motor to
+        :return: ServoMotor
+        """
+        self._validate_pin(pin)
+        self._pin_used.append(pin)
+        commands = self.generate_command_list(2)
+        methods = ['rotate']
+        uuid = self.get_attached_device_type(ServoMotor) + 1
+        command_map = dictutils.map_key_value(methods, commands)
+        servo_motor = ServoMotor(self, pin, command_map, uuid=uuid)
+        self._devices.append(servo_motor)
+        return servo_motor
+    

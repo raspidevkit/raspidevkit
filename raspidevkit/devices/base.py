@@ -226,132 +226,6 @@ class PwmDevice(GPIO.PWM):
     
 
 
-class ArduinoDevice:
-    def __init__(self, pin_setup: dict, device_type: str, commands: dict[str, Union[str, int]]) -> None:
-        """
-        Create a Arduino device.
-
-        :param pin_setup: Config dictionary of pin mode, can be `INPUT`,`PULL_UP`, 
-            \t`PULL_DOWN`, `OUTPUT` or `custom`. When custom, the setup method 
-            \tcan be overriden
-        :param device_type: This device device_type `INPUT`or `OUTPUT`
-        :param commands: Dictionary of commands with methods as keys.
-        Sample command configuration:
-        ```python
-        commands = {
-            "turnOn": 1,
-            "turnOff": 2
-        }
-        ```
-        """
-        self._setup_code = ""
-        for pin in pin_setup.keys():
-            if pin_setup[pin] == INPUT:
-                self._setup_code += f'pinMode({pin}, INPUT);\n'
-            elif pin_setup[pin] == PULL_UP:
-                self._setup_code += f'pinMode({pin}, INPUT_PULLUP);\n'
-            elif pin_setup[pin] == PULL_DOWN:
-                self._setup_code += f'pinMode({pin}, INPUT_PULLDOWN);\n'
-            elif pin_setup[pin] == OUTPUT:
-                self._setup_code += f'pinMode({pin}, OUTPUT);\n'
-            else:
-                raise ValueError(f'Invalid value for pin {pin}')
-        self.__multi_pin = False
-        if len(pin_setup.keys()) > 1:
-            self.__multi_pin = True
-        
-        if self.__multi_pin:
-            self.__pins = tuple([int(pin) for pin in dict.keys()])
-        else:
-            self.__pin = int(list(pin_setup.keys())[0])
-
-        self._device_type = device_type
-        self._methods = list(commands.keys())
-        self._commands = commands
-        self._code_mapping = {
-            'libraries' : [],
-            'setup': self._setup_code,
-            'methods': {}
-        }
-
-
-
-    @property
-    def device_type(self) -> str:
-        """
-        This device type
-        """
-        return self._device_type
-
-
-
-    @property
-    def pin(self) -> int:
-        """
-        Device pin, if single pin
-        """
-        if self.__multi_pin:
-            raise Exception('This is not accessible for multi-pin device. Use pins instead')
-        return self.__pin
-    
-
-
-    @property
-    def pins(self) -> tuple[int]:
-        """
-        Device pins, if multi-pin
-        """
-        if not self.__multi_pin:
-            raise Exception('This is not accessible for single-pin device. Use pin instead')
-        return self.__pins
-
-
-
-    @property
-    def code(self) -> dict:
-        """
-        Code mapping
-        """
-        return self._code_mapping
-    
-
-
-    @property
-    def commands(self) -> dict[str, int]:
-        """
-        Commands available to this device
-        """
-        return self._commands
-    
-
-
-    def validate_commands(self, keys: list):
-        """
-        Validate the commands parameter pass. All required
-        key should be present.
-        """
-        for key in keys:
-            if key not in self._commands.keys():
-                raise Exception(f'Key {key} is not present in commands')
-
-
-
-    def _map_method_code(self):
-        """
-        Create method code mapping
-        """
-        pass
-
-
-
-    def cleanup(self):
-        """
-        Perform cleanup
-        """
-        pass
-
-
-
 class I2CDevice:
     def __init__(self, machine, address: int) -> None:
         """
@@ -468,3 +342,132 @@ class I2CDevice:
         :param force: Force write flag
         """
         self.__machine.i2c_write_block_data(self.__address, register, data, force)
+
+
+
+class ArduinoDevice:
+    def __init__(self, pin_setup: dict, device_type: str, commands: dict[str, Union[str, int]]) -> None:
+        """
+        Create a Arduino device.
+
+        :param pin_setup: Config dictionary of pin mode, can be `INPUT`,`PULL_UP`, 
+            \t`PULL_DOWN`, `OUTPUT` or `custom`. When custom, the setup method 
+            \tcan be overriden
+        :param device_type: This device device_type `INPUT`or `OUTPUT`
+        :param commands: Dictionary of commands with methods as keys.
+        Sample command configuration:
+        ```python
+        commands = {
+            "turnOn": 1,
+            "turnOff": 2
+        }
+        ```
+        """
+        self._setup_code = ""
+        for pin in pin_setup.keys():
+            if pin_setup[pin] == INPUT:
+                self._setup_code += f'pinMode({pin}, INPUT);\n'
+            elif pin_setup[pin] == PULL_UP:
+                self._setup_code += f'pinMode({pin}, INPUT_PULLUP);\n'
+            elif pin_setup[pin] == PULL_DOWN:
+                self._setup_code += f'pinMode({pin}, INPUT_PULLDOWN);\n'
+            elif pin_setup[pin] == OUTPUT:
+                self._setup_code += f'pinMode({pin}, OUTPUT);\n'
+            elif pin_setup[pin] == 'custom':
+                pass
+            else:
+                raise ValueError(f'Invalid value for pin {pin}')
+        self.__multi_pin = False
+        if len(pin_setup.keys()) > 1:
+            self.__multi_pin = True
+        
+        if self.__multi_pin:
+            self.__pins = tuple([int(pin) for pin in dict.keys()])
+        else:
+            self.__pin = int(list(pin_setup.keys())[0])
+
+        self._device_type = device_type
+        self._methods = list(commands.keys())
+        self._commands = commands
+        self._code_mapping = {
+            'libraries' : [],
+            'global': '',
+            'setup': self._setup_code,
+            'methods': {}
+        }
+
+
+
+    @property
+    def device_type(self) -> str:
+        """
+        This device type
+        """
+        return self._device_type
+
+
+
+    @property
+    def pin(self) -> int:
+        """
+        Device pin, if single pin
+        """
+        if self.__multi_pin:
+            raise Exception('This is not accessible for multi-pin device. Use pins instead')
+        return self.__pin
+    
+
+
+    @property
+    def pins(self) -> tuple[int]:
+        """
+        Device pins, if multi-pin
+        """
+        if not self.__multi_pin:
+            raise Exception('This is not accessible for single-pin device. Use pin instead')
+        return self.__pins
+
+
+
+    @property
+    def code(self) -> dict:
+        """
+        Code mapping
+        """
+        return self._code_mapping
+    
+
+
+    @property
+    def commands(self) -> dict[str, int]:
+        """
+        Commands available to this device
+        """
+        return self._commands
+    
+
+
+    def validate_commands(self, keys: list):
+        """
+        Validate the commands parameter pass. All required
+        key should be present.
+        """
+        for key in keys:
+            if key not in self._commands.keys():
+                raise Exception(f'Key {key} is not present in commands')
+
+
+
+    def _map_method_code(self):
+        """
+        Create method code mapping
+        """
+        pass
+
+
+
+    def cleanup(self):
+        """
+        Perform cleanup
+        """
+        pass
