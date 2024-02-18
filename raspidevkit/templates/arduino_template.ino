@@ -7,6 +7,8 @@ The following libraries may be required to compile to code:
 
 $header
 
+$global_vars
+
 int currentCommand = -1;
 
 void setup(){
