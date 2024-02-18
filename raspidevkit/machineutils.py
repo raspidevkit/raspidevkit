@@ -66,13 +66,26 @@ class dictutils:
                     return True
             return False
 
+
+
+class stringutil:
+    """
+    String utility helper
+    """
+
+    @staticmethod
+    def generate_string(length: int) -> str:
+        """
+        Randomly generate a string with length
+
+        :param length: Length of string to generate
+        :return: Generated string
+        """
+        res = ''.join(random.choices(string.ascii_uppercase + string.digits, 
+                                        k=length))
+        return res
     
 
-
-class formatutil:
-    """
-    Formatter utility helper
-    """
 
     @staticmethod
     def snake_to_camel(text: str) -> str:
@@ -107,25 +120,6 @@ class formatutil:
         for key, value in chars.items():
             result = result.replace(key, value)
         return result
-    
-
-
-class stringutil:
-    """
-    String utility helper
-    """
-
-    @staticmethod
-    def generate_string(length: int) -> str:
-        """
-        Randomly generate a string with length
-
-        :param length: Length of string to generate
-        :return: Generated string
-        """
-        res = ''.join(random.choices(string.ascii_uppercase + string.digits, 
-                                        k=length))
-        return res
     
 
 

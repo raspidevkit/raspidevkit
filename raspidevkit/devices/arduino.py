@@ -1,7 +1,7 @@
 from .base import ArduinoDevice
 from .arduino_devices.arduino_led import ArduinoLed
 from .arduino_devices.servo_motor import ServoMotor
-from raspidevkit.machineutils import dictutils, formatutil, fileutil
+from raspidevkit.machineutils import dictutils, stringutil, fileutil
 from typing import Union
 from string import Template
 
@@ -185,13 +185,13 @@ class Arduino(serial.Serial):
             device_methods = device.code['methods']
             for method, code in device_methods.items():
                 method_name = f'{method}_{str(device)}_{index}'
-                method_name = formatutil.snake_to_camel(method_name)
+                method_name = stringutil.snake_to_camel(method_name)
                 methods += f'void {method_name}() {{\n {code} }}\n'
         
             # Register to loop
             for method, command in device.commands.items():
                 method_name = f'{method}_{str(device)}_{index}'
-                method_name = formatutil.snake_to_camel(method_name)
+                method_name = stringutil.snake_to_camel(method_name)
                 loop += f'else if(currentCommand == {command}){{ {method_name}(); currentCommand = -1;}}\n\n'
 
         with open(template_path, 'r') as file:
@@ -201,9 +201,9 @@ class Arduino(serial.Serial):
         content = template_file.substitute(header=headers,
                                            global_vars = global_vars,
                                            baudrate=self.baudrate,
-                                           cmd_terminator = formatutil.escape_whitespace(self._cmd_terminator),
-                                           data_terminator = formatutil.escape_whitespace(self._data_terminator),
-                                           whitespace_sub = formatutil.escape_whitespace(self._whitespace_sub),
+                                           cmd_terminator = stringutil.escape_whitespace(self._cmd_terminator),
+                                           data_terminator = stringutil.escape_whitespace(self._data_terminator),
+                                           whitespace_sub = stringutil.escape_whitespace(self._whitespace_sub),
                                            setup=setups,
                                            loop=loop,
                                            methods=methods)
