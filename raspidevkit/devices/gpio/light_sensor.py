@@ -23,7 +23,7 @@ class LightSensor(GpioDevice):
 
     def read(self) -> int:
         """
-        Read the current state of button
+        Read the current light value
 
         :return: Value
         """
