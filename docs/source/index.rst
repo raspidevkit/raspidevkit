@@ -13,6 +13,7 @@ Welcome to raspidevkit's documentation!
    installation
    usage
    gpio_devices
+   drivers
 
 Indices and tables
 ==================
