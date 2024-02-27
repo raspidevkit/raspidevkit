@@ -7,6 +7,7 @@ from .devices import (
     Arduino,
     Button,
     Led,
+    L293DDriver,
     L298NDriver,
     LightSensor,
     PassiveBuzzer,
@@ -793,6 +794,22 @@ class Machine:
         self.logger.info(f'L298N Driver attached to pins: {pins}')
         return l298n
 
+
+
+    def attach_l293d(self, pins: Union[list, tuple]) -> L293DDriver:
+        """
+        Attach a L293D Driver to this machine
+
+        :param pins: Pins this device is connected to.
+                     Should follow the format 
+                     (ena, in1, in2) or (ena, in1, in2, enb, in3, in4)
+        """
+        self._validate_pin(pins)
+        l293d = L293DDriver(self, pins)
+        self._devices.append(l293d)
+        self.logger.info(f'L293D Driver attached to pins: {pins}')
+        return l293d
+    
 
 
     def attach_sim808(self, port: str) -> Sim808:

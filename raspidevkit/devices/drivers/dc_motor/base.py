@@ -1,6 +1,6 @@
 from raspidevkit.constants import OUTPUT, CLOCKWISE, COUNTER_CLOCKWISE
 from raspidevkit.machineutils import dictutils
-from ....base import GpioDevice, PwmDevice
+from ...base import GpioDevice, PwmDevice
 from abc import abstractmethod
 
 

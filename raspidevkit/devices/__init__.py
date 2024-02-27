@@ -9,7 +9,8 @@ from .gpio.servo_motor import ServoMotor
 from .gpio.relay import Relay
 from .gpio.ultrasonic_sensor import UltrasonicSensor
 
-from .gpio.drivers.dc_motor.l298n import L298NDriver
+from .drivers.dc_motor.l298n import L298NDriver
+from .drivers.dc_motor.l293d import L293DDriver
 
 from .serial.sim808 import Sim808
 from .serial.arduino import Arduino
