@@ -14,6 +14,7 @@ Welcome to raspidevkit's documentation!
    usage
    gpio_devices
    drivers
+   arduino_devices
 
 Indices and tables
 ==================
