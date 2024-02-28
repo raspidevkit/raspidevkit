@@ -2,11 +2,35 @@
 Easily control devices with Raspberry Pi
 
 ## Building
-First, ensure that the `setuptools` and `wheel` packages as installed with `pip install setuptools wheel`
+First, ensure that the `setuptools` and `wheel` packages as installed with
 
-Navigate to root directory and run `python setup.py sdist bdist_wheel` to create the distribution package
+```bash
+pip install setuptools 
+pip install wheel
+```
+
+Navigate to root directory and create the distribution package by running 
+
+```bash
+python setup.py sdist bdist_wheel
+```
 
 After creating the package, we can now install the package with `pip install dist/raspidevkit-{version}.tar.gz`
+
+## Generating Documentation
+
+To generate documentation, ensure that sphinx, as well as the theme by doing
+
+```bash
+pip install sphinx
+pip install sphinx_rtd_theme
+```
+
+After installing the documentation dependencies navigate to the `docs` folder. Inside the docs folder, run:
+
+```bash
+sphinx-build -M html source/ build/
+```
 
 ## Usage
 ### Blinking an LED
