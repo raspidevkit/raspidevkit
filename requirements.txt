@@ -1,5 +1,8 @@
 fake-rpi
+pytest
 pyserial
 setuptools
+sphinx
+sphinx-rtd-theme
 smbus2
 wheel
