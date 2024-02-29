@@ -25,3 +25,4 @@ Input Devices
    devices/gpio/button
    devices/gpio/light_sensor
    devices/gpio/pir_motion_sensor
+   devices/gpio/ultrasonic_sensor
