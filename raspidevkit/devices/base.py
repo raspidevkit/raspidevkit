@@ -79,6 +79,23 @@ class GpioDevice:
 
 
 
+    def gpio_setup(self, pin: int,  setup: str):
+        """
+        Explicitly setup a GPIO pin
+
+        :param pin: Pin to setup
+        :param setup: Pin mode (INPUT or OUTPUT)
+        """
+        if not self.__multi_pin and pin != self.pin:
+            raise ValueError('Pin not mapped to device')
+        
+        if self.__multi_pin and pin not in self.__pins:
+            raise ValueError('Pin not mapped to device')
+        
+        return self.__machine.gpio_setup(pin, setup)
+
+
+
     def gpio_write(self, pin: int, value: bool):
         """
         Perform a GPIO output on pin

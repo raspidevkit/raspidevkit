@@ -766,11 +766,11 @@ class Machine:
     
 
 
-    def attach_ultrasonic_sensor(self, pins: tuple[int, str]) -> ServoMotor:
+    def attach_ultrasonic_sensor(self, pins: tuple[int, str]) -> UltrasonicSensor:
         """
         Attach a ultrasonic sensor to this machine
 
-        :param pins: Tuple of pins to use, in RGB order (trigger, echo)
+        :param pins: Tuple of pins to use, in order (trigger, echo)
         """
         self._validate_pin(pins)
         ultrasonic_sensor = UltrasonicSensor(self, pins)
