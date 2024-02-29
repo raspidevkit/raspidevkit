@@ -34,7 +34,7 @@ class L293DDriver(DcMotorDriver):
 
 
 
-    def attach_motor(self):
+    def attach_motor(self, is_pwm: bool = False):
         """
         Attach a motor to this driver
 
@@ -48,7 +48,7 @@ class L293DDriver(DcMotorDriver):
         if not motor_pins:
             raise RuntimeError('Missing motor pins.')
         
-        motor = L293DMotor(self, motor_pins)
+        motor = L293DMotor(self, motor_pins, is_pwm)
         self._motors.append(motor)
         return motor
 
