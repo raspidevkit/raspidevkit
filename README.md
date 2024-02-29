@@ -33,6 +33,9 @@ sphinx-build -M html source/ build/
 ```
 
 ## Usage
+
+For all devices coverage, you can read the documentation [here](https://raspidevkit.readthedocs.io/en/latest/)
+
 ### Blinking an LED
 ```python
 import raspidevkit
