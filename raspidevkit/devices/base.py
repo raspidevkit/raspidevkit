@@ -41,7 +41,7 @@ class GpioDevice:
             self.__multi_pin = True
         
         if self.__multi_pin:
-            self.__pins = tuple([pin for pin in pin_setup.keys()])
+            self.__pins = tuple([int(pin) for pin in pin_setup.keys()])
         else:
             self.__pin = int(list(pin_setup.keys())[0])
         self._device_type = device_type
