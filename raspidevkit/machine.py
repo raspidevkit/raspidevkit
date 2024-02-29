@@ -766,7 +766,7 @@ class Machine:
     
 
 
-    def attach_ultrasonic_sensor(self, pins: tuple[int, str]) -> UltrasonicSensor:
+    def attach_ultrasonic_sensor(self, pins: tuple[int]) -> UltrasonicSensor:
         """
         Attach a ultrasonic sensor to this machine
 
