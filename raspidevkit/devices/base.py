@@ -241,6 +241,14 @@ class PwmDevice(GPIO.PWM):
         if self._state:
             self.ChangeFrequency(frequency)
             self.__frequency = frequency
+
+
+        
+    def cleanup(self):
+        """
+        Perform cleanup
+        """
+        pass
     
 
 
@@ -360,6 +368,14 @@ class I2CDevice:
         :param force: Force write flag
         """
         self.__machine.i2c_write_block_data(self.__address, register, data, force)
+
+
+
+    def cleanup(self):
+        """
+        Perform cleanup
+        """
+        pass
 
 
 
