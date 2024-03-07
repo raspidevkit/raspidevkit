@@ -17,6 +17,31 @@ python setup.py sdist bdist_wheel
 
 After creating the package, we can now install the package with `pip install dist/raspidevkit-{version}.tar.gz`
 
+## Running Test
+First ensure that `pytest` is installed on your machine by running
+
+```bash
+pip install pytest
+```
+
+#### Run all test
+
+```bash
+pytest
+```
+
+#### Run single test file
+
+```bash
+pytest tests/test_gpio_devices.py
+```
+
+#### Run single test case
+
+```bash
+pytest test/test_gpio_devices.py::TestGpioDevice::test_button
+```
+
 ## Generating Documentation
 
 To generate documentation, ensure that sphinx, as well as the theme by doing
