@@ -32,7 +32,9 @@ class GpioDevice:
         }
         ```
         """
-        self.__machine = machine
+        from raspidevkit import Machine
+
+        self.__machine: Machine = machine
         for pin, setup in pin_setup.items():
             self.__machine.gpio_setup(int(pin), setup)
         
@@ -260,8 +262,10 @@ class I2CDevice:
         :param machine: Machine instance
         :param address: Device I2C address
         """
+        from raspidevkit import Machine
+        
         self.__address = address
-        self.__machine = machine
+        self.__machine: Machine = machine
 
 
     
