@@ -23,6 +23,7 @@ import sys
 import subprocess
 import logging
 import re
+import json
 import time
 
 try:
@@ -437,22 +438,23 @@ class Machine:
         if not self.__arduino_cli_installed:
             raise Exception('Arduino CLI not found')
         
-        result = subprocess.run(['arduino-cli', 'board', 'listall'], 
+        result = subprocess.run(['arduino-cli', 'board', 'listall',
+                                 '--format', 'json'], 
                                 check=True, 
                                 cwd=self.__arduino_cli_path, 
                                 shell=True, 
                                 capture_output=True, 
                                 text = True)
-        result_string = result.stdout
-        mapping = {}
-        lines = result_string.strip().split("\n")
-        for line in lines:
-            parts = line.split()
-            if len(parts) >= 2:
-                board_name = " ".join(parts[:-1])
-                fqbn = parts[-1]
-                mapping[board_name] = fqbn
-        return mapping
+        result = json.loads(result.stdout)
+        boards = result['boards']
+
+        board_mapping = {}
+        for board in boards:
+            name = board['name']
+            fqbn = board['fqbn']
+            board_mapping[name] = fqbn
+        
+        return board_mapping
     
 
 
@@ -465,21 +467,21 @@ class Machine:
         if not self.__arduino_cli_installed:
             raise Exception('Arduino CLI not found')
         
-        result = subprocess.run(['arduino-cli', 'lib', 'list'], 
+        result = subprocess.run(['arduino-cli', 'lib', 'list',
+                                 '--format', 'json'], 
                                 check=True, 
                                 cwd=self.__arduino_cli_path, 
                                 shell=True, 
                                 capture_output=True, 
                                 text = True)
-        result_string = result.stdout
+        libraries = json.loads(result.stdout)
+
         library_info_map = {}
-        lines = result_string.strip().split("\n")
-        for line in lines[1:]:
-            name_pattern = r'([\w ]+)\d+\.\d+\.\d+'
-            version_pattern = r'(\d+\.\d+\.\d+)'
-            name = re.search(name_pattern, line).group(1).strip()
-            version = re.search(version_pattern, line).group(1).strip()
+        for library in libraries:
+            name = library['library']['name']
+            version = library['library']['version']
             library_info_map[name] = version
+
         return library_info_map
 
 
