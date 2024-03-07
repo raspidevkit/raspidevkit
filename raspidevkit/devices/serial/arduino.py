@@ -1,7 +1,7 @@
 from ..base import ArduinoDevice
 from ..arduino.led import Led
 from ..arduino.servo_motor import ServoMotor
-from raspidevkit.machineutils import dictutils, stringutil, fileutil
+from raspidevkit.utils import dictutils, stringutil, fileutil
 from typing import Union
 from string import Template
 

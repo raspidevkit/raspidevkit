@@ -3,7 +3,7 @@ sys.path.append('../')
 
 from ..base import GpioDevice
 from raspidevkit.constants import INPUT, OUTPUT
-from raspidevkit.machineutils import mathutil
+from raspidevkit.utils import mathutil
 import time
 
 

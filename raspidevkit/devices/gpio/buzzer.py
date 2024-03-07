@@ -3,7 +3,7 @@ sys.path.append('../')
 
 from ..base import GpioDevice, PwmDevice
 from raspidevkit.constants import OUTPUT
-from raspidevkit.machineutils import soundutil
+from raspidevkit.utils import soundutil
 from typing import Union
 import time
 

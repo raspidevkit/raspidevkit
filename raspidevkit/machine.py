@@ -1,4 +1,4 @@
-from .machineutils import dictutils, fileutil
+from .utils import dictutils, fileutil
 from .__logger import MachineLogger
 from .constants import INPUT, PULL_UP, PULL_DOWN, OUTPUT
 from typing import Union

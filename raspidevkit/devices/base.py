@@ -1,6 +1,6 @@
 import sys
 from ..constants import INPUT, OUTPUT, PULL_UP, PULL_DOWN
-from raspidevkit.machineutils import stringutil
+from raspidevkit.utils import stringutil
 from typing import Union
 
 try:

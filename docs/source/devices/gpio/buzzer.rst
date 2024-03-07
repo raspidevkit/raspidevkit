@@ -48,7 +48,7 @@ You can try simulating a note by using the soundutil helper package. It is also 
 .. code-block:: python
 
    import raspidevkit
-   from raspidevkit.machineutils import soundutil
+   from raspidevkit.utils import soundutil
    import time
 
    machine = raspidevkit.Machine()
@@ -67,7 +67,7 @@ You can also play music by creating a music sheet like list indicating the notes
 .. code-block:: python
 
    import raspidevkit
-   from raspidevkit.machineutils import soundutil
+   from raspidevkit.utils import soundutil
    import time
 
    machine = raspidevkit.Machine()

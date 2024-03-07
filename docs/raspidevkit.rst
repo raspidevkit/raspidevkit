@@ -28,10 +28,10 @@ raspidevkit.machine module
    :undoc-members:
    :show-inheritance:
 
-raspidevkit.machineutils module
+raspidevkit.utils module
 -------------------------------
 
-.. automodule:: raspidevkit.machineutils
+.. automodule:: raspidevkit.utils
    :members:
    :undoc-members:
    :show-inheritance:
