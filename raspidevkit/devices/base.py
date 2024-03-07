@@ -384,11 +384,12 @@ class I2CDevice:
 
 
 class ArduinoDevice:
-    def __init__(self, pin_setup: dict, device_type: str, 
+    def __init__(self, arduino, pin_setup: dict, device_type: str, 
                  commands: dict[str, Union[str, int]], uuid: str = '') -> None:
         """
         Create a Arduino device.
 
+        :param arduino: Arduino master
         :param pin_setup: Config dictionary of pin mode, can be `INPUT`,`PULL_UP`, 
             \t`PULL_DOWN`, `OUTPUT` or `custom`. When custom, the setup method 
             \tcan be overriden
@@ -403,6 +404,9 @@ class ArduinoDevice:
         }
         ```
         """
+        from .serial.arduino import Arduino
+
+        self._arduino: Arduino = arduino
         self._setup_code = ""
         for pin in pin_setup.keys():
             if pin_setup[pin] == INPUT:

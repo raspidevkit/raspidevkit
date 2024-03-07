@@ -26,7 +26,8 @@ class ServoMotor(ArduinoDevice):
         pin_setup = {
             str(pin): 'custom'
         }
-        super().__init__(pin_setup=pin_setup, 
+        super().__init__(arduino=arduino,
+                         pin_setup=pin_setup, 
                          device_type=OUTPUT, 
                          commands=commands,
                          uuid=uuid)
@@ -36,7 +37,6 @@ class ServoMotor(ArduinoDevice):
 
         self.validate_commands(all_methods)
         self._method_code = self._map_method_code()
-        self.__arduino = arduino
 
         self._state = False
         self._code_mapping['libraries'] = ['Servo.h']
@@ -71,8 +71,8 @@ class ServoMotor(ArduinoDevice):
             raise ValueError('Angle should be int')
 
         command = self._commands.get('turn_on')
-        self.__arduino.send_command(command)
-        self.__arduino.send_data(str(angle))
+        self._arduino.send_command(command)
+        self._arduino.send_data(str(angle))
 
 
 

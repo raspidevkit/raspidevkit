@@ -24,7 +24,8 @@ class Led(ArduinoDevice):
         pin_setup = {
             str(pin): OUTPUT
         }
-        super().__init__(pin_setup=pin_setup, 
+        super().__init__(arduino=arduino,
+                         pin_setup=pin_setup, 
                          device_type=OUTPUT, 
                          commands=commands)
         all_methods = [
@@ -33,7 +34,6 @@ class Led(ArduinoDevice):
         ]
         self.validate_commands(all_methods)
         self._method_code = self._map_method_code()
-        self.__arduino = arduino
         self._state = False
         self._code_mapping['methods'] = {
             'turn_on': f'digitalWrite({pin}, HIGH);',
@@ -57,7 +57,7 @@ class Led(ArduinoDevice):
         """
         if not self._state:
             command = self._commands.get('turn_on')
-            self.__arduino.send_command(command)
+            self._arduino.send_command(command)
             self._state = True
 
 
@@ -68,7 +68,7 @@ class Led(ArduinoDevice):
         """
         if self._state:
             command = self._commands.get('turn_off')
-            self.__arduino.send_command(command)
+            self._arduino.send_command(command)
             self._state = False
 
 
