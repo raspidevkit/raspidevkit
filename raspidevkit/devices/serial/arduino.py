@@ -1,17 +1,16 @@
-from ..base import ArduinoDevice
+from ..base import SerialDevice, ArduinoDevice
 from ..arduino.led import Led
 from ..arduino.servo_motor import ServoMotor
 from raspidevkit.utils import dictutils, stringutil, fileutil
 from typing import Union
 from string import Template
 
-import serial
 import subprocess
 import tempfile
 import pkg_resources
 
 
-class Arduino(serial.Serial):
+class Arduino(SerialDevice):
     def __init__(self, 
                  machine, 
                  port: Union[str,None] = None, 
@@ -27,6 +26,7 @@ class Arduino(serial.Serial):
         :param **kwargs: Other args for serial.Serial object
         """
         from raspidevkit import Machine
+
         super().__init__(port, baudrate, **kwargs)
         self.board = board
         self._cmd_terminator = '\n'
@@ -73,9 +73,8 @@ class Arduino(serial.Serial):
         else:
             raise ValueError('Unknown arduino response origin')
         
-        response = self.read_until(terminator.encode())
-        self.__machine.logger.debug(f'[SERIAL][READ] Returned: {response}')
-        return response.decode('utf-8').strip()
+        response = self.read_until(terminator.encode(), encoding='utf-8')
+        return response.strip()
     
 
 
@@ -85,9 +84,8 @@ class Arduino(serial.Serial):
 
         :param command: Command to set, usually auto-generated when attaching devices
         """
-        self.__machine.logger.debug(f'[SERIAL][WRITE] Write on {self.port}: {command}')
         while True:
-            self.write(bytes(str(command) + self._cmd_terminator, 'utf-8'))
+            self.write(str(command) + self._cmd_terminator)
             response = self.read_response(origin='cmd')
             if 'ok' in response.lower():
                 break
@@ -100,11 +98,9 @@ class Arduino(serial.Serial):
 
         :param data: Data to send
         """
-        self.__machine.logger.debug(f'[SERIAL][WRITE] Write on {self.port}: {data}')
         raw_data = f'{data}{self._data_terminator}'.replace(' ', self._whitespace_sub)
-        data = bytes(raw_data, 'utf-8')
         while True:
-            self.write(data)
+            self.write(raw_data)
             response = self.read_response(origin='data')
             if 'ok' in response.lower():
                 break
@@ -211,7 +207,7 @@ class Arduino(serial.Serial):
         with open(output_file, 'w') as file:
             file.write(content)
 
-        if self.__machine.clang_enabled:
+        if self.__machine.arduino_cli.formatting:
             self.__format_code(output_file)
 
 
@@ -240,9 +236,9 @@ class Arduino(serial.Serial):
         if previous_hash == current_hash and not fresh:
             self.__machine.logger.info('Generated code matched with previously generated code. Skipping upload')
             return
-        fbqn = self.__machine.get_arduino_boards()[self.board]
+        fbqn = self.__machine.arduino_cli.get_boards()[self.board]
         self.close()
-        self.__machine.upload_arduino_code(sketch_path, self.port, fbqn)
+        self.__machine.arduino_cli.upload_code(sketch_path, self.port, fbqn)
         self.open()
 
 

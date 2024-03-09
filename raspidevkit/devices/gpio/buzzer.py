@@ -59,7 +59,7 @@ class PassiveBuzzer(PwmDevice):
 
         :param pin: Pin this device is attached to
         """
-        super().__init__(pin, 440)
+        super().__init__(machine, pin, 440)
         self._machine = machine
 
 

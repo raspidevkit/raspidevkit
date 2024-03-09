@@ -1,7 +1,9 @@
-import sys
 from ..constants import INPUT, OUTPUT, PULL_UP, PULL_DOWN
-from raspidevkit.utils import stringutil
+from ..utils import stringutil
+
 from typing import Union
+import serial
+import sys
 
 try:
     import RPi.GPIO as GPIO
@@ -36,7 +38,7 @@ class GpioDevice:
 
         self.__machine: Machine = machine
         for pin, setup in pin_setup.items():
-            self.__machine.gpio_setup(int(pin), setup)
+            self.__machine.gpio.setup(int(pin), setup)
         
         self.__multi_pin = False
         if len(pin_setup.keys()) > 1:
@@ -94,7 +96,7 @@ class GpioDevice:
         if self.__multi_pin and pin not in self.__pins:
             raise ValueError('Pin not mapped to device')
         
-        return self.__machine.gpio_setup(pin, setup)
+        return self.__machine.gpio.setup(pin, setup)
 
 
 
@@ -112,7 +114,7 @@ class GpioDevice:
         if self.__multi_pin and pin not in self.__pins:
             raise ValueError('Pin not mapped to device')
         
-        return self.__machine.gpio_write(pin, value)
+        return self.__machine.gpio.write(pin, value)
 
 
 
@@ -129,7 +131,7 @@ class GpioDevice:
         if self.__multi_pin and pin not in self.__pins:
             raise ValueError('Pin not mapped to device')
         
-        return self.__machine.gpio_read(pin)
+        return self.__machine.gpio.read(pin)
 
 
 
@@ -142,13 +144,16 @@ class GpioDevice:
 
 
 class PwmDevice(GPIO.PWM):
-    def __init__(self, pin: int, frequency: float) -> None:
+    def __init__(self, machine, pin: int, frequency: float) -> None:
         """
         Create a PWM device
 
+        :param machine: Machine instance
         :param pin: Pin this device is attached to
         :param frequency: Device frequency
         """
+        from raspidevkit import Machine
+
         super().__init__(pin, frequency)
         self.__pin = pin
         self.__frequency = frequency
@@ -156,6 +161,7 @@ class PwmDevice(GPIO.PWM):
         self.__multi_pin = False
         self._device_type = OUTPUT
         self._state = False
+        self.__machine: Machine = machine
 
     
 
@@ -285,7 +291,7 @@ class I2CDevice:
         :param force: Force read flag
         :return: Read byte value
         """
-        return self.__machine.i2c_read_byte(self.__address, force)
+        return self.__machine.i2c.read_byte(self.__address, force)
     
 
 
@@ -297,7 +303,7 @@ class I2CDevice:
         :param force: Force read flag
         :return: 2-byte word
         """
-        return self.__machine.i2c_read_word_data(self.__address, register, force)
+        return self.__machine.i2c.read_word_data(self.__address, register, force)
     
 
 
@@ -309,7 +315,7 @@ class I2CDevice:
         :param force: Force read flag
         :return: Read byte value
         """
-        return self.__machine.i2c_read_byte_data(self.__address, register, force)
+        return self.__machine.i2c.read_byte_data(self.__address, register, force)
     
 
 
@@ -323,7 +329,7 @@ class I2CDevice:
         :param force: Force read flag
         :return: List of bytes
         """
-        return self.__machine.i2c_read_block_data(self.__address, register, length, force)
+        return self.__machine.i2c.read_block_data(self.__address, register, length, force)
     
 
 
@@ -334,7 +340,7 @@ class I2CDevice:
         :param value: Value to write
         :param force: Force write flag
         """
-        self.__machine.i2c_write_byte(self.__address, value, force)
+        self.__machine.i2c.write_byte(self.__address, value, force)
 
 
 
@@ -346,7 +352,7 @@ class I2CDevice:
         :param value: Word value to write
         :param force: Force write flag
         """
-        self.__machine.i2c_write_word_data(register, value, force)
+        self.__machine.i2c.write_word_data(register, value, force)
 
 
         
@@ -371,7 +377,7 @@ class I2CDevice:
         :param data: List of byte values to write
         :param force: Force write flag
         """
-        self.__machine.i2c_write_block_data(self.__address, register, data, force)
+        self.__machine.i2c.write_block_data(self.__address, register, data, force)
 
 
 
@@ -380,6 +386,94 @@ class I2CDevice:
         Perform cleanup
         """
         pass
+
+
+
+class SerialDevice(serial.Serial):
+    def __init__(self, machine, port: Union[str, None] = None, 
+                 baudrate: int = 9600, **kwargs) -> None:
+        """
+        Create a serial device
+
+        :param machine: Machine instancce
+        :param port: Serial port to use
+        :param baudrate: Serial communication baudrate
+        :param **kwargs: Other args for serial.Serial object
+        """
+        from raspidevkit import Machine
+
+        super().__init__(port, baudrate, **kwargs)
+        self.__machine: Machine = machine
+
+
+    
+    def write(self, data: Union[str, bytes], encoding: str = 'utf-8') -> int | None:
+        """
+        Output the given byte string over the serial port.
+        String data is automatically encoded
+
+        :param data: String data to send
+        """
+        if isinstance(data, str):
+            data = bytes(data, encoding)
+        self.__machine.logger.debug(f'[SERIAL][WRITE] Attempting write on {self.port}: {data}')
+        output =  super().write(data)
+        self.__machine.logger.debug(f'[SERIAL][WRITE] Returned: {output}')
+        return output
+
+
+
+    def read(self, size: int = 1, 
+             encoding: Union[str, None] = None) -> Union[bytes, str]:
+        """
+        Read size bytes from the serial port. 
+        If a timeout is set it may return less characters as requested. 
+        With no timeout it will block until the requested number of bytes is read.
+
+        :param size: Byte size to read
+        :param encoding: If given, decodes output to given encoding format
+        """
+        self.__machine.logger.debug(f'[SERIAL][READ] Attempting read on {self.port}:{size}')
+        output =  super().read(size)
+        if encoding:
+            output = output.decode(encoding)
+        self.__machine.logger.debug(f'[SERIAL][READ] Returned: {output}')
+        return output
+    
+
+
+    def read_until(self, expected: bytes = b"\n", 
+                   size: Union[int, None] = None, 
+                   encoding: Union[str, None] = None) -> bytes:
+        """
+        Read until an expected sequence is found (' ' by default), the size
+        is exceeded or until timeout occurs.
+
+        :param expected: Sequence to end reading
+        :param size: Byte size to read
+        :param encoding: If given, decodes output to given encoding format
+        """
+        self.__machine.logger.debug(f'[SERIAL][READ] Attempting read on {self.port}:{expected}:{size}')
+        output =  super().read_until(expected, size)
+        if encoding:
+            output = output.decode(encoding)
+        self.__machine.logger.debug(f'[SERIAL][READ] Returned: {output}')
+        return output
+    
+
+
+    def read_all(self, encoding: Union[str, None] = None) -> Union[bytes, None]:
+        """
+        Read all bytes currently available in the buffer of the OS.
+
+        :param encoding: If given, decodes output to given encoding format
+        """
+        self.__machine.logger.debug(f'[SERIAL][READ] Attempting read on {self.port}:all')
+        output =  super().read_all()
+        if encoding:
+            output = output.decode(encoding)
+        self.__machine.logger.debug(f'[SERIAL][READ] Returned: {output}')
+        return output
 
 
 

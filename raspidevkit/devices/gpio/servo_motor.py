@@ -14,7 +14,7 @@ class ServoMotor(PwmDevice):
         :param pin: Pin this device is attached to
         :param frequency: Device frequency
         """
-        super().__init__(pin, frequency)
+        super().__init__(machine, pin, frequency)
         self.duty_cycle = 0
         self.__min_angle_duty_cycle = (-180, 2.5)
         self.__max_angle_duty_cycle = (180, 12.5)

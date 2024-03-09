@@ -29,9 +29,21 @@ class DcMotorDriver:
         }
         ```
         """
-        self.__machine = machine
+        from  raspidevkit import Machine
+
+        self.__machine: Machine = machine
+        self.__gpio = self.__machine.gpio
         self._max_motor = len(motor_pin_setup.keys())
         self._motors = []
+
+
+
+    @property
+    def gpio(self):
+        """
+        GPIO interface
+        """
+        return self.__gpio
 
 
     
@@ -60,7 +72,7 @@ class DcMotorDriver:
         :param pin: The pin to write
         :param value: Can be HIGH or LOW
         """
-        self.__machine.gpio_write(pin, value)
+        self.__machine.gpio.write(pin, value)
 
 
 
@@ -71,7 +83,7 @@ class DcMotorDriver:
         :param pin: Pin to setup
         :param setup: Pin mode (INPUT or OUTPUT)
         """
-        self.__machine.gpio_setup(pin, setup)
+        self.__machine.gpio.setup(pin, setup)
 
 
 
