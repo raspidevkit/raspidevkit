@@ -36,6 +36,13 @@ class TestGpioDevice:
         passive_buzzer.play_note('E2')
 
     
+    def test_dht_sensors(self, machine: Machine):
+        # Cant mock test
+        dht11 = machine.attach_dht11(18)
+        dht22 = machine.attach_dht22(14)
+
+
+
     def test_led(self, machine: Machine):
         led = machine.attach_led(18)
         led.turn_on()

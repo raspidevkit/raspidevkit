@@ -3,6 +3,7 @@ import os
 import random
 import re
 import string
+from typing import Union
 
 class dictutils:
     """
@@ -305,3 +306,17 @@ class mathutil:
         factor = dictutils.get(conversion_factors, measure_in, measure_out)
         converted_distance = distance * factor
         return converted_distance
+
+
+
+    @staticmethod
+    def bits_to_int(bits: list[Union[str, int]], base: int):
+        """
+        Convert a list of bits to int
+
+        :param bits: List of bits
+        :param base: N-base of each bits
+        """
+        bits_str = ''.join([str(bit) for bit in bits])
+        output = int(bits_str, base)
+        return output
