@@ -1,6 +1,7 @@
 from ..base import SerialDevice, ArduinoDevice
 from ..arduino.led import Led
 from ..arduino.servo_motor import ServoMotor
+from ..arduino.dht import DHT11, DHT22
 from raspidevkit.utils import dictutils, stringutil, fileutil
 from typing import Union
 from string import Template
@@ -294,3 +295,40 @@ class Arduino(SerialDevice):
         self._devices.append(servo_motor)
         return servo_motor
     
+
+
+    def attach_dht11(self, pin: int) -> DHT11:
+        """
+        Attach a DHT11 sensor to this arduino
+
+        :param pin: Arduino pin to attach DHT11 sensor to
+        :return: DHT11
+        """
+        self._validate_pin(pin)
+        self._pin_used.append(pin)
+        commands = self.generate_command_list(3)
+        methods = ['get_data', 'get_temperature', 'get_humidity']
+        uuid = self.get_attached_device_type(DHT11) + 1
+        command_map = dictutils.map_key_value(methods, commands)
+        dht11 = DHT11(self, pin, command_map, uuid=uuid)
+        self._devices.append(dht11)
+        return dht11
+
+
+
+    def attach_dht22(self, pin: int) -> DHT22:
+        """
+        Attach a DHT22 sensor to this arduino
+
+        :param pin: Arduino pin to attach DHT22 sensor to
+        :return: DHT22
+        """
+        self._validate_pin(pin)
+        self._pin_used.append(pin)
+        commands = self.generate_command_list(3)
+        methods = ['get_data', 'get_temperature', 'get_humidity']
+        uuid = self.get_attached_device_type(DHT22) + 1
+        command_map = dictutils.map_key_value(methods, commands)
+        dht22 = DHT22(self, pin, command_map, uuid=uuid)
+        self._devices.append(dht22)
+        return dht22
