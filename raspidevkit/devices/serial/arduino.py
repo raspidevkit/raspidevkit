@@ -27,7 +27,7 @@ class Arduino(SerialDevice):
         """
         from raspidevkit import Machine
 
-        super().__init__(port, baudrate, **kwargs)
+        super().__init__(machine, port, baudrate, **kwargs)
         self.board = board
         self._cmd_terminator = '\n'
         self._data_terminator = '\r\n'
