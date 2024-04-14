@@ -1,0 +1,29 @@
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "raspidevkit"
+version = "0.0.1"
+description = "Easily control devices with Raspberry Pi"
+readme = "README.md"
+authors = [{ name = "DailyLollipops", email = "clarencemadrigal84@gmail.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["python", "raspberry-pi", "iot", "arduino"]
+dependencies = [
+    "fake-rpi",
+    "pyserial",
+    "smbus2",
+]
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+dev = ["sphinx", "sphinx-rtd-theme", "setuptools", "wheel", "pytest"]
+
+[project.urls]
+Homepage = "https://github.com/raspidevkit/raspidevkit"
