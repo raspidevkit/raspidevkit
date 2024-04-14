@@ -2,6 +2,7 @@
 Easily control devices with Raspberry Pi
 
 ## Building
+### Using setuptools
 First, ensure that the `setuptools` and `wheel` packages as installed with
 
 ```bash
@@ -13,6 +14,15 @@ Navigate to root directory and create the distribution package by running
 
 ```bash
 python setup.py sdist bdist_wheel
+```
+
+After creating the package, we can now install the package with `pip install dist/raspidevkit-{version}.tar.gz`
+
+### Using build (project.toml)
+```bash
+pip install piptools build
+pip-compile --extra dev pyproject.toml
+python -m build
 ```
 
 After creating the package, we can now install the package with `pip install dist/raspidevkit-{version}.tar.gz`
@@ -56,6 +66,35 @@ After installing the documentation dependencies navigate to the `docs` folder. I
 ```bash
 sphinx-build -M html source/ build/
 ```
+
+## Uploading to PyPi
+Install dependencies
+
+```bash
+pip install twine
+```
+
+Then build the projevt either by using setuptools or by build. After generating the wheel and source file, test it with twine
+
+```bash
+twine check dist/*
+```
+
+To upload to testpypi use:
+
+```bash
+twine upload-r testpypi dist/*
+```
+
+To upload to PyPi use:
+
+```bash
+twine upload dist/*
+```
+
+Enter your API key which should be in the .env file. 
+
+Install it with `pip install raspidevkit`
 
 ## Usage
 
@@ -202,7 +241,7 @@ We would like to thank the developers of the following third-party libraries, wh
 These libraries have been instrumental in achieving various functionalities within our project. We express our gratitude to the developers for their hard work and dedication in creating and maintaining these essential tools.
 
 ## TODO
-- [ ] Launch to PyPi
-- [ ] Create documentation
+- [x] Launch to PyPi
+- [x] Create documentation
 - [ ] Add support for SPI devices
 - [ ] Add more supported devices
