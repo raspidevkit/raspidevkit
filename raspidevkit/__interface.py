@@ -419,7 +419,7 @@ class ArduinoCliInterface:
         libraries = json.loads(result.stdout)
 
         library_info_map = {}
-        for library in libraries:
+        for library in libraries['installed_libraries']:
             name = library['library']['name']
             version = library['library']['version']
             library_info_map[name] = version
