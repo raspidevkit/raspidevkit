@@ -1,5 +1,6 @@
 from ..base import SerialDevice, ArduinoDevice
 from ..arduino.led import Led
+from ..arduino.relay import Relay
 from ..arduino.servo_motor import ServoMotor
 from raspidevkit.utils import dictutils, stringutil, fileutil
 from typing import Union
@@ -275,6 +276,24 @@ class Arduino(SerialDevice):
         self._devices.append(led)
         return led
 
+
+
+    def attach_relay(self, pin: int) -> Relay:
+        """
+        Attach a relay to this arduino
+
+        :param pin: Arduino pin to attach relay to
+        :return: ArduinoRelay
+        """
+        self._validate_pin(pin)
+        self._pin_used.append(pin)
+        commands = self.generate_command_list(2)
+        methods = ['turn_on', 'turn_off']
+        command_map = dictutils.map_key_value(methods, commands)
+        relay = Relay(self, pin, command_map)
+        self._devices.append(relay)
+        return relay
+    
 
 
     def attach_servo_motor(self, pin: int) -> ServoMotor:
