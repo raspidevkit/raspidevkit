@@ -13,6 +13,7 @@ Output Devices
    :maxdepth: 1
 
    devices/arduino/led
+   devices/arduino/relay
    devices/arduino/servo_motor
 
 Input Devices
