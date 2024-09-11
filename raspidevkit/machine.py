@@ -10,6 +10,8 @@ from .devices import (
     ActiveBuzzer,
     Arduino,
     Button,
+    DHT11,
+    DHT22,
     Led,
     L293DDriver,
     L298NDriver,
@@ -174,6 +176,34 @@ class Machine:
         self._devices.append(button)
         self.logger.info(f'Button attached to pin: {pin}')
         return button
+    
+
+
+    def attach_dht11(self, pin: int) -> DHT11:
+        """
+        Attach a DHT11 sensor to this machine
+
+        :param pin: Pin to attach the sensor to
+        """
+        self._validate_pin(pin)
+        dht11 = DHT11(self, pin)
+        self._devices.append(dht11)
+        self.logger.info(f'DHT11 sensor attached to pin: {pin}')
+        return dht11
+    
+
+
+    def attach_dht22(self, pin: int) -> DHT22:
+        """
+        Attach a DHT22 sensor to this machine
+
+        :param pin: Pin to attach the sensor to
+        """
+        self._validate_pin(pin)
+        dht22 = DHT22(self, pin)
+        self._devices.append(dht22)
+        self.logger.info(f'DHT22 sensor attached to pin: {pin}')
+        return dht22
     
 
 
