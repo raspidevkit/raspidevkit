@@ -21,3 +21,5 @@ Input Devices
 
 .. toctree::
    :maxdepth: 1
+
+   devices/arduino/dht
