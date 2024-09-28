@@ -24,3 +24,4 @@ Input Devices
 
    devices/arduino/button
    devices/arduino/dht
+   devices/arduino/hall_effect_sensor
