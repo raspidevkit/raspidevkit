@@ -1,4 +1,5 @@
 from ..base import SerialDevice, ArduinoDevice
+from ..arduino.hall_effect_sensor import HallEffectSensor
 from ..arduino.led import Led
 from ..arduino.relay import Relay
 from ..arduino.servo_motor import ServoMotor
@@ -259,6 +260,23 @@ class Arduino(SerialDevice):
         except subprocess.CalledProcessError as e:
             self.__machine.logger.error(f'Error formatting {file}: {e}')
             
+
+
+    def attach_hall_effect_sensor(self, pin: int) -> HallEffectSensor:
+        """
+        Attach a hall effect sensor to this arduino
+        :param pin: Arduino pin to attach hall effect sensor to
+        :return: ArduinoHallEffectSensor
+        """
+        self._validate_pin(pin)
+        self._pin_used.append(pin)
+        commands = self.generate_command_list(1)
+        methods = ['read']
+        command_map = dictutils.map_key_value(methods, commands)
+        hall_effect_sensor = HallEffectSensor(self, pin, command_map)
+        self._devices.append(hall_effect_sensor)
+        return hall_effect_sensor
+    
 
 
     def attach_led(self, pin: int) -> Led:

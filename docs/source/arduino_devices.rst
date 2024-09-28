@@ -23,3 +23,4 @@ Input Devices
    :maxdepth: 1
 
    devices/arduino/dht
+   devices/arduino/hall_effect_sensor
