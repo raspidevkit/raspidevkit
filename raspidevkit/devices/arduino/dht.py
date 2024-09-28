@@ -1,5 +1,5 @@
 from ..base import ArduinoDevice
-from raspidevkit.constants import OUTPUT
+from raspidevkit.constants import INPUT
 from typing import Tuple, Optional, Union
 import time
 
@@ -23,11 +23,11 @@ class DHTSensor(ArduinoDevice):
         ```
         """
         pin_setup = {
-            str(pin): OUTPUT
+            str(pin): INPUT
         }
         super().__init__(arduino=arduino,
                          pin_setup=pin_setup, 
-                         device_type=OUTPUT, 
+                         device_type=INPUT, 
                          commands=commands)
         all_methods = [
             'get_data',
