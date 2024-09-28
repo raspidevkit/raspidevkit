@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "raspidevkit"
-version = "0.0.4"
+version = "0.0.5"
 description = "Easily control devices with Raspberry Pi"
 readme = "README.md"
 authors = [{ name = "DailyLollipops", email = "clarencemadrigal84@gmail.com" }]
