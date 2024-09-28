@@ -12,6 +12,7 @@ from .devices import (
     Button,
     DHT11,
     DHT22,
+    HallEffectSensor,
     Led,
     L293DDriver,
     L298NDriver,
@@ -176,6 +177,20 @@ class Machine:
         self._devices.append(button)
         self.logger.info(f'Button attached to pin: {pin}')
         return button
+    
+
+
+    def attach_hall_effect_sensor(self, pin: int) -> HallEffectSensor:
+        """
+        Attach a hall effect sensor to this machine
+
+        :param pin: Pin to attach the button to
+        """
+        self._validate_pin(pin)
+        hall_effect_sensor = HallEffectSensor(self, pin)
+        self._devices.append(hall_effect_sensor)
+        self.logger.info(f'Hall effect sensor attached to pin: {pin}')
+        return hall_effect_sensor
     
 
 

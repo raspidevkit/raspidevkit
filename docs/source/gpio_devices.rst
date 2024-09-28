@@ -24,6 +24,7 @@ Input Devices
 
    devices/gpio/button
    devices/gpio/dht_sensor
+   devices/gpio/hall_effect_sensor
    devices/gpio/light_sensor
    devices/gpio/pir_motion_sensor
    devices/gpio/ultrasonic_sensor
