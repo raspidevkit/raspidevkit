@@ -1,5 +1,6 @@
 from .gpio.button import Button
 from .gpio.dht_sensor import DHT11, DHT22
+from .gpio.hall_effect_sensor import HallEffectSensor
 from .gpio.led import Led
 from .gpio.rgb_led import RgbLed
 from .gpio.buzzer import ActiveBuzzer
