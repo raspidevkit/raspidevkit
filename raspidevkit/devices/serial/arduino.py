@@ -1,4 +1,5 @@
 from ..base import SerialDevice, ArduinoDevice
+from ..arduino.button import Button
 from ..arduino.led import Led
 from ..arduino.relay import Relay
 from ..arduino.servo_motor import ServoMotor
@@ -259,6 +260,24 @@ class Arduino(SerialDevice):
         except subprocess.CalledProcessError as e:
             self.__machine.logger.error(f'Error formatting {file}: {e}')
             
+
+
+    def attach_button(self, pin: int) -> Button:
+        """
+        Attach a button to this arduino
+
+        :param pin: Arduino pin to attach button to
+        :return: ArduinoButton
+        """
+        self._validate_pin(pin)
+        self._pin_used.append(pin)
+        commands = self.generate_command_list(1)
+        methods = ['read']
+        command_map = dictutils.map_key_value(methods, commands)
+        button = Button(self, pin, command_map)
+        self._devices.append(button)
+        return button
+    
 
 
     def attach_led(self, pin: int) -> Led:
