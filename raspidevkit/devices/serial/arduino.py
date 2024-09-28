@@ -1,4 +1,5 @@
 from ..base import SerialDevice, ArduinoDevice
+from ..arduino.button import Button
 from ..arduino.hall_effect_sensor import HallEffectSensor
 from ..arduino.led import Led
 from ..arduino.relay import Relay
@@ -261,6 +262,24 @@ class Arduino(SerialDevice):
             self.__machine.logger.error(f'Error formatting {file}: {e}')
             
 
+            
+    def attach_button(self, pin: int) -> Button:
+        """
+        Attach a button to this arduino
+
+        :param pin: Arduino pin to attach button to
+        :return: ArduinoButton
+        """
+        self._validate_pin(pin)
+        self._pin_used.append(pin)
+        commands = self.generate_command_list(1)
+        methods = ['read']
+        command_map = dictutils.map_key_value(methods, commands)
+        button = Button(self, pin, command_map)
+        self._devices.append(button)
+        return button
+    
+
 
     def attach_hall_effect_sensor(self, pin: int) -> HallEffectSensor:
         """
@@ -276,9 +295,9 @@ class Arduino(SerialDevice):
         hall_effect_sensor = HallEffectSensor(self, pin, command_map)
         self._devices.append(hall_effect_sensor)
         return hall_effect_sensor
-    
-
-
+      
+      
+      
     def attach_led(self, pin: int) -> Led:
         """
         Attach a LED to this arduino

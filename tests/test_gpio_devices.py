@@ -21,6 +21,11 @@ class TestGpioDevice:
         button = machine.attach_button(18)
         button.read()
 
+
+    def test_hall_effect_sensor(self, machine: Machine):
+        hall_effect_sensor = machine.attach_hall_effect_sensor(18)
+        hall_effect_sensor.read()
+
     
     def test_buzzer_active(self, machine: Machine):
         active_buzzer = machine.attach_active_buzzer(18)

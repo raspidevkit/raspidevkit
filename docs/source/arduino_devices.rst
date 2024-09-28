@@ -22,5 +22,6 @@ Input Devices
 .. toctree::
    :maxdepth: 1
 
+   devices/arduino/button
    devices/arduino/dht
    devices/arduino/hall_effect_sensor
