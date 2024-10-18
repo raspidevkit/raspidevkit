@@ -154,6 +154,8 @@ class PwmDevice(GPIO.PWM):
         """
         from raspidevkit import Machine
 
+        self.__machine: Machine = machine
+        self.__machine.gpio.setup(pin, OUTPUT)
         super().__init__(pin, frequency)
         self.__pin = pin
         self.__frequency = frequency
@@ -161,7 +163,6 @@ class PwmDevice(GPIO.PWM):
         self.__multi_pin = False
         self._device_type = OUTPUT
         self._state = False
-        self.__machine: Machine = machine
 
     
 
