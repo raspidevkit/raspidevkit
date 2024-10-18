@@ -450,11 +450,11 @@ class ArduinoCliInterface:
             self.__logger.info(f'Installing library via zip path: {zip_path}')
         elif git_url:
             command.append('--git_url')
-            url = f'{git_url}{'#' + version if version != 'latest' else ''}'
+            url = f"{git_url}{'#' + version if version != 'latest' else ''}"
             command.append(url)
             self.__logger.info(f'Installing library via git url: {git_url}')
         else:
-            name = f'{name}{'@' + version if version != 'latest' else ''}'
+            name = f"{name}{'@' + version if version != 'latest' else ''}"
             command.append(name)
             self.__logger.info(f'Installing library via name: {name}')
         
