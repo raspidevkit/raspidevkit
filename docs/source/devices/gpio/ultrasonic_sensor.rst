@@ -1,11 +1,11 @@
 Ultrasonic Sensor (HC-SR04)
 -------------------------------
 
-The connection diagram for servo motor is shown below:
+The connection diagram for ultrasonic sensor is shown below:
 
 
 .. image:: ../../_static/gpio/ultrasonic_sensor.png
-   :alt: Servo motor connection
+   :alt: Ultrasonic sensor connection
    :align: center
 
 
