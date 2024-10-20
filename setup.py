@@ -5,7 +5,7 @@ setuptools.setup(
     description="Easily control devices with Raspberry Pi",
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    version="0.0.6",
+    version="0.0.6.1",
     url="https://github.com/raspidevkit/raspidevkit",
     author="DailyLollipops",
     author_email="clarencemadrigal84@gmail.com",
