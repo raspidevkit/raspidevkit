@@ -257,7 +257,7 @@ class PwmDevice(GPIO.PWM):
         """
         Perform cleanup
         """
-        pass
+        self.stop()
     
 
 
