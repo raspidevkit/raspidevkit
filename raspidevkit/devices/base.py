@@ -408,7 +408,7 @@ class SerialDevice(serial.Serial):
 
 
     
-    def write(self, data: Union[str, bytes], encoding: str = 'utf-8') -> int | None:
+    def write(self, data: Union[str, bytes], encoding: str = 'utf-8') -> Union[int, None]:
         """
         Output the given byte string over the serial port.
         String data is automatically encoded

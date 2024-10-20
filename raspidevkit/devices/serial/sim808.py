@@ -1,3 +1,4 @@
+from typing import Union
 import serial
 import time
 import datetime
@@ -5,7 +6,7 @@ import re
 
 
 class Sim808(serial.Serial):
-    def __init__(self, machine, port: str | None = None, baudrate: int = 9600, **kwargs) -> None:
+    def __init__(self, machine, port: Union[str, None] = None, baudrate: int = 9600, **kwargs) -> None:
         """
         Initialize SIM808 device. 
 
