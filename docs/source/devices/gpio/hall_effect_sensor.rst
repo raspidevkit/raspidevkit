@@ -1,5 +1,5 @@
 Hall Effect Sensor
------------------
+----------------------
 
 The connection diagram for hall effect is shown below:
 
