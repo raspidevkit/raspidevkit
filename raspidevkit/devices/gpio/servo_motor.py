@@ -16,10 +16,11 @@ class ServoMotor(PwmDevice):
         """
         super().__init__(machine, pin, frequency)
         self.duty_cycle = 0
-        self.__min_angle_duty_cycle = (-180, 2.5)
+        self.__min_angle_duty_cycle = (0, 2.5)
         self.__max_angle_duty_cycle = (180, 12.5)
         self._machine = machine
         self.__angle = 0
+        self.start(0)
 
 
 
@@ -53,9 +54,7 @@ class ServoMotor(PwmDevice):
         :param wait: Seconds to wait for rotation to complete
         """
         min_angle = self.__min_angle_duty_cycle[0]
-        min_duty_cycle = self.__min_angle_duty_cycle[1]
         max_angle = self.__max_angle_duty_cycle[0]
-        max_duty_cycle = self.__max_angle_duty_cycle[1]
 
         if angle < min_angle:
             raise ValueError('Angle is lower than allowed minimum angle')
@@ -63,17 +62,19 @@ class ServoMotor(PwmDevice):
         if angle > max_angle:
             raise ValueError('Angle is higher than the allowed maximum angle')
 
-        duty_cycle = self.__map_angle_to_duty_cycle(angle, min_duty_cycle, 
-                                                   max_duty_cycle, min_angle, max_angle)
-        self.start(duty_cycle)
+        duty_cycle = self.__map_angle_to_duty_cycle(angle)
+        self.change_duty_cycle(duty_cycle)
         time.sleep(wait)
-        self.stop()
 
 
 
-    def __map_angle_to_duty_cycle(self, angle, min_duty, max_duty, min_angle, max_angle):
+    def __map_angle_to_duty_cycle(self, angle):
+        min_angle = self.__min_angle_duty_cycle[0]
+        min_duty_cycle = self.__min_angle_duty_cycle[1]
+        max_angle = self.__max_angle_duty_cycle[0]
+        max_duty_cycle = self.__max_angle_duty_cycle[1]
         angle = max(min_angle, min(max_angle, angle))
-        mapped_duty_cycle = ((angle - min_angle) / (max_angle - min_angle)) * (max_duty - min_duty) + min_duty
+        mapped_duty_cycle = ((angle - min_angle) / (max_angle - min_angle)) * (max_duty_cycle - min_duty_cycle) + min_duty_cycle
         return mapped_duty_cycle
     
 
