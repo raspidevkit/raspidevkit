@@ -252,6 +252,18 @@ class PwmDevice(GPIO.PWM):
             self.__frequency = frequency
 
 
+
+    def change_duty_cycle(self, duty_cycle: float):
+        """
+        Change device duty cycle
+
+        :param duty_cycle: New duty cycle
+        """
+        if self._state:
+            self.ChangeDutyCycle(duty_cycle)
+            self.__duty_cycle = duty_cycle
+
+
         
     def cleanup(self):
         """
